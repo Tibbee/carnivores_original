@@ -43,7 +43,7 @@ void STTextOut(int x, int y, LPSTR t, int color)
 void ShowControlElements()
 {
   
-  HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
+  HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
     
   char buf[128];  
   
@@ -1598,8 +1598,8 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 
-	HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
-    HFONT oldfont = SelectObject(hdcCMain, fnt_Small);  
+	HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
+    HFONT oldfont = static_cast<HFONT>(SelectObject(hdcCMain, fnt_Small));  
 /*
 	int dtype = Characters[TrophyBody].CType;
 	int tc = Characters[TrophyBody].State;
@@ -1682,8 +1682,8 @@ void Render_LifeInfo(int li)
 {
 	int x,y;
 	
-	HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
-    HFONT oldfont = SelectObject(hdcCMain, fnt_Small);  
+	HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
+    HFONT oldfont = static_cast<HFONT>(SelectObject(hdcCMain, fnt_Small));  
 		
 	int   ctype = Characters[li].CType;
 	float  scale = Characters[li].scale;	
@@ -1837,7 +1837,7 @@ void RenderSkyPlane()
 void ShowVideo()
 {
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
 
   if (UNDERWATER & CORRECTION)
    for (int y=0; y<WinH; y++) 
