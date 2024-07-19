@@ -310,7 +310,7 @@ void d3dFlushBuffer(int fproc1, int fproc2)
     lpInstruction++;
     lpTriangle             = (LPD3DTRIANGLE)lpInstruction;   
       
-    for (i=0; i<fproc2; i++) {  	   
+    for (int i=0; i<fproc2; i++) {  	   
 	 lpTriangle->wV1    = ii++;
      lpTriangle->wV2    = ii++;	
      lpTriangle->wV3    = ii++;	
@@ -753,8 +753,8 @@ void Init3DHardware()
 
 void d3dDetectCaps()
 {
-
-	for (int t=0; t<d3dmemmapsize; t++) {
+    int t;
+	for (t=0; t<d3dmemmapsize; t++) {
 		if (!d3dAllocTexture(t, 256, 256)) break;
 	}
 
@@ -1290,7 +1290,7 @@ void ddTextOut(int x, int y, LPSTR t, int color)
   SetBkMode( ddBackDC, TRANSPARENT );
 
   HFONT oldfont;
-  if (SmallFont) oldfont = SelectObject(ddBackDC, fnt_Small);
+  if (SmallFont) oldfont = static_cast<HFONT>(SelectObject(ddBackDC, fnt_Small));
     
   SetTextColor(ddBackDC, 0x00101010);
   TextOut(ddBackDC, x+2, y+1, t, strlen(t));
@@ -1308,7 +1308,7 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+    HFONT oldfont = static_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 	int tc = TrophyBody;
 	
 	int   dtype = TrophyRoom.Body[tc].ctype;
@@ -2937,7 +2937,7 @@ void Render3DHardwarePosts()
    }   
 
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;
@@ -3550,7 +3550,7 @@ void RenderHealthBar()
     lpVertex++;
   }
 
-  for (y=1; y<3; y++) {	  
+  for (int y=1; y<3; y++) {	  
 	lpVertex->sx       = (float)x0;
     lpVertex->sy       = (float)y0+y;
     lpVertex->sz       = 0.99999f;
@@ -3606,7 +3606,7 @@ void RenderHealthBar()
    lpInstruction++;
    lpLine                 = (LPD3DLINE)lpInstruction;   
 
-   for (y=0; y<6; y++) {
+   for (int y=0; y<6; y++) {
     lpLine->wV1    = y*2;
     lpLine->wV2    = y*2+1;   
     lpLine++;
