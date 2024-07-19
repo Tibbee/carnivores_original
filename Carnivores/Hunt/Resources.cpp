@@ -466,14 +466,14 @@ void CorrectModel(TModel *mptr)
     }
 
 	int fp = 0;
-    for (f=0; f<mptr->FCount; f++) 
+    for (int f=0; f<mptr->FCount; f++) 
 		if ( (mptr->gFace[f].Flags & (sfOpacity | sfTransparent))==0)
 		{
 			tface[fp] = mptr->gFace[f];
             fp++;
 		}
 
-	for (f=0; f<mptr->FCount; f++) 
+	for (int f=0; f<mptr->FCount; f++) 
 		if ( (mptr->gFace[f].Flags & (sfOpacity | sfTransparent))!=0)
 		{
 			tface[fp] = mptr->gFace[f];
@@ -1165,7 +1165,7 @@ void ReleaseCharacterInfo(TCharacterInfo &chinfo)
      chinfo.Animation[c].aniData = NULL;
 	}
 
-	for (c = 0; c<64; c++) {
+	for (int c = 0; c<64; c++) {
      if (!chinfo.SoundFX[c].lpData) break;
 	 _HeapFree(Heap, 0, chinfo.SoundFX[c].lpData);
      chinfo.SoundFX[c].lpData = NULL;
@@ -1287,7 +1287,7 @@ void ScrollWater()
         
         xpos/=2;
 
-        for (y=0; y<64; y++) {          
+        for (int y=0; y<64; y++) {          
           int ypos = (y*2-WaterShift*2) & 127;
           ypos/=2;
 
@@ -1301,7 +1301,7 @@ void ScrollWater()
 
         xpos/=2;
 
-        for (y=0; y<32; y++) {          
+        for (int y=0; y<32; y++) {          
           int ypos = (y*4-WaterShift*2) & 127;
           ypos/=4;
 
