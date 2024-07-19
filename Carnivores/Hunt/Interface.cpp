@@ -59,7 +59,7 @@ int GetTextW(HDC hdc, LPSTR s)
 
 void PrintText(LPSTR s, int x, int y, int rgb)
 {
-  HBITMAP hbmpOld = SelectObject(hdcCMain,hbmpVideoBuf);   
+  HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(hdcCMain,hbmpVideoBuf));   
   SetBkMode(hdcCMain, TRANSPARENT);     
    
   SetTextColor(hdcCMain, 0x00000000);  
@@ -434,7 +434,7 @@ void LoadMenuTGA()
     if( hfile == INVALID_HANDLE_VALUE ) return;
     SetFilePointer(hfile, 18, 0, FILE_BEGIN);
     //ReadFile( hfile, lpMenuBuf2, 800*600*2, &l, NULL );       
-	for (y=599; y>=0; y--) ReadFile( hfile, (WORD*)lpMenuBuf2+y*800,  800*2, &l, NULL );       
+	for (int y=599; y>=0; y--) ReadFile( hfile, (WORD*)lpMenuBuf2+y*800,  800*2, &l, NULL );       
     CloseHandle( hfile ); 
     Sleep(2);
 
@@ -456,7 +456,7 @@ void LoadMenuTGA()
 void ShowMenuVideo()
 {
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
   if (RestartMode) 
 	  FillMemory(lpVideoBuf, 1024*600*2, 0);
   BitBlt(hdcMain,0,0,800,600, _hdc,0,0, SRCCOPY);
@@ -490,9 +490,9 @@ void DrawSlider(int x, int y, float l)
 	HPEN wp = CreatePen(PS_SOLID, 0, 0x009F9F9F);
 	HBRUSH wb = CreateSolidBrush(0x003FAF3F);
 
-    HPEN oldpen = SelectObject(hdcCMain, GetStockObject(BLACK_PEN));
-	HBRUSH  oldbrs = SelectObject(hdcCMain, GetStockObject(BLACK_BRUSH));
-	HBITMAP oldbmp = SelectObject(hdcCMain,hbmpVideoBuf);   
+    HPEN oldpen = static_cast<HPEN>(SelectObject(hdcCMain, GetStockObject(BLACK_PEN)));
+	HBRUSH  oldbrs = static_cast<HBRUSH>(SelectObject(hdcCMain, GetStockObject(BLACK_BRUSH)));
+	HBITMAP oldbmp = static_cast<HBITMAP>(SelectObject(hdcCMain,hbmpVideoBuf));   
 	
 
 	x+=1; y+=1; 
@@ -531,7 +531,7 @@ void DrawSlider(int x, int y, float l)
 
 void DrawOptions()
 {
-	HFONT oldfont = SelectObject(hdcCMain, fnt_BIG);
+	HFONT oldfont = static_cast<HFONT>(SelectObject(hdcCMain, fnt_BIG));
 	
 	for (int m=0; m<3; m++) 
 		for (int l=0; l<Options[m].Count; l++) {
@@ -799,10 +799,10 @@ void CopyMenuToVideo(int m)
 	 
 
    if (MenuSelect==3)
-    for (t=0; t<ObserText.Lines; t++)
+    for (int t=0; t<ObserText.Lines; t++)
       PrintText(ObserText.Text[t], 50, 330+t*16, 0x809F25);   
    else
-    for (t=0; t<LandText.Lines; t++)
+    for (int t=0; t<LandText.Lines; t++)
       PrintText(LandText.Text[t], 50, 330+t*16, 0x809F25);   
   }
 
@@ -1168,7 +1168,7 @@ void IdentifyPlayer()
 	   }
 
 //=== search for free slot =======//
-   for (i=0; i<6; i++)
+   for (int i=0; i<6; i++)
 	   if (!PlayerR[i].PName[0]) {
 		   NEWPLAYER = TRUE;
 		   CurPlayer=i;
