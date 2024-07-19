@@ -6,17 +6,23 @@ Then you can write the following commands.
 
 To build HUNT_3DFX.exe:
 cmake . -B Build3DFX -DCMAKE_BUILD_TYPE=Release3DFX
+
 cd Build3DFX
+
 NMake
 
 To build HUNT_D3D.exe:
 cmake . -B BuildD3D -DCMAKE_BUILD_TYPE=ReleaseD3D
+
 cd BuildD3D
+
 NMake
 
 To build HUNT_SOFT.exe:
 cmake . -B BuildSOFT -DCMAKE_BUILD_TYPE=ReleaseSoft
+
 cd BuildSOFT
+
 NMake
 
 I also recommend using Ninja build tools instead of NMake.
