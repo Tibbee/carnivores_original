@@ -666,11 +666,11 @@ void FXTextOut(int x, int y, LPSTR t, int color)
 {
 
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = static_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
   SetBkMode(_hdc, TRANSPARENT);
 
   HFONT oldfont;
-  if (SmallFont) oldfont = SelectObject(_hdc, fnt_Small);
+  if (SmallFont) oldfont = static_cast<HFONT>(SelectObject(_hdc, fnt_Small));
 
   int w = GetTextW(_hdc, t)+4;
   for (int h=0; h<18; h++)
@@ -696,7 +696,7 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+  HFONT oldfont = static_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 	int tc = TrophyBody;
 
 	int   dtype = TrophyRoom.Body[tc].ctype;
@@ -771,7 +771,7 @@ void Render_LifeInfo(int li)
 {
 	int x,y;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+    HFONT oldfont = static_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 		
 	int   ctype = Characters[li].CType;
 	float  scale = Characters[li].scale;	
@@ -2280,7 +2280,7 @@ void Render3DHardwarePosts()
 
 
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;
