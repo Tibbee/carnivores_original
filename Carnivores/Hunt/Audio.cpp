@@ -75,7 +75,7 @@ int InitDirectSound( HWND hwnd)
 
 
    iTotal16SD = 0;
-   for( i = 0; i < iTotalSoundDevices; i++ ) {
+   for(int i = 0; i < iTotalSoundDevices; i++ ) {
       LPDIRECTSOUND lpds;
       if( DirectSoundCreate( sdd[i].lpGuid, &lpds, NULL ) != DS_OK ) continue;
 
