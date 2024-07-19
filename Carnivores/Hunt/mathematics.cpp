@@ -517,7 +517,7 @@ void CalcLights(TModel* mptr)
 	for (int v=0; v<VCount; v++) {
 		FUsed = 0;
 		nv.x=0; nv.y=0; nv.z=0;
-		for (f=0; f<FCount; f++) 
+		for (int f=0; f<FCount; f++) 
 		  if (!(mptr->gFace[f].Flags & sfOpacity) )
 			if (mptr->gFace[f].v1 == v || mptr->gFace[f].v2 == v || mptr->gFace[f].v3 == v ) 
 			{ FUsed++;  nv = AddVectors(nv, norms[f]); }	
