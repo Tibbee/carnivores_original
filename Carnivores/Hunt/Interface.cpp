@@ -606,7 +606,7 @@ void DrawOptions()
 
 void DrawMainStats()
 {
-   HFONT oldfont = SelectObject(hdcCMain, fnt_BIG);
+   HFONT oldfont = static_cast<HFONT>(SelectObject(hdcCMain, fnt_BIG));
    char t[32];
    int  c = 0x003070A0;
 
