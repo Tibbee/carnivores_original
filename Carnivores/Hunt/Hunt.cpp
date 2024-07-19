@@ -402,7 +402,7 @@ NOSHIP: ;
 
 //============= Dinosaurs ====================//
    TCharacter *cptr;
-   for (c=0; c<ChCount; c++) {
+   for (int c=0; c<ChCount; c++) {
       cptr = &Characters[c];
       cptr->rpos.x = cptr->pos.x - CameraX;
       cptr->rpos.y = cptr->pos.y - CameraY;
@@ -433,7 +433,7 @@ NOSHIP: ;
 
 //============= Explosions =================//
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;
@@ -978,10 +978,10 @@ BOOL CreateMainWindow()
     wc.lpfnWndProc = (WNDPROC)MainWndProc; 
     wc.cbClsExtra = 0;                  
     wc.cbWndExtra = 0;                  
-    wc.hInstance = hInst;
-    wc.hIcon = wc.hIcon = LoadIcon(hInst,"ACTION");
+    wc.hInstance = static_cast<HINSTANCE>(hInst);
+    wc.hIcon = LoadIcon(wc.hInstance,"ACTION");
     wc.hCursor = NULL;
-	wc.hbrBackground = GetStockObject( BLACK_BRUSH );
+	  wc.hbrBackground = static_cast<HBRUSH>(GetStockObject( BLACK_BRUSH ));
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "HuntWindow";
     if (!RegisterClass(&wc)) return FALSE;
@@ -989,7 +989,7 @@ BOOL CreateMainWindow()
     hwndMain = CreateWindow(
         "HuntWindow","Carnivores",
   		WS_VISIBLE |  WS_POPUP,
-		0, 0, 0, 0, NULL,  NULL, hInst, NULL );
+		0, 0, 0, 0, NULL,  NULL, wc.hInstance, NULL );
 
 	if (hwndMain)
 	  PrintLog("Ok.\n");
@@ -1642,7 +1642,7 @@ void ProcessGame()
 
 
 
-int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance,
+int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			       LPSTR lpszCmdLine, int nCmdShow)
 {
     MSG msg;	
