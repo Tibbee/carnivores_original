@@ -1,0 +1,13 @@
+# Ignore build directories
+Build/
+.vscode/
+*.ninja
+*.vcxproj*
+*.sln
+*.exe
+*.dll
+*.pdb
+*Hunt/afxres.h
+Backup/
+Glide2/
+Docs/
