@@ -1,14 +1,23 @@
 #include "math.h"
+#include "stdio.h"
 #include "windows.h"
 #include "winuser.h"
 
-#include "resource.h"
+#include "Resource.h"
 
 #include "ddraw.h"
 
 #ifdef _d3d
 #include <d3d.h>
 #endif
+
+/*#ifdef DEBUG
+#define _STRINGIZE(x) #x
+#define STRINGIZE(x) _STRINGIZE(x)
+#pragma message("DEBUG macro is defined with value: " STRINGIZE(DEBUG))
+#else
+#pragma message("DEBUG macro is not defined")
+#endif*/
 
 #define ctHScale  32
 #define PMORPHTIME 256
@@ -336,7 +345,7 @@ typedef struct _TTrophyRoom {
 
 
 typedef struct _TDinoInfo {
-	LPSTR Name;
+	char Name[32];
 	int Health0;
 	BOOL DangerCall;
 	float Mass, Length, Radius, 
@@ -347,7 +356,7 @@ typedef struct _TDinoInfo {
 
 
 typedef struct _TWeapInfo {
-	LPSTR Name;
+	char Name[32];
 	float Power, Prec, Loud, Rate;
 	int Shots;
 } TWeapInfo;
@@ -402,7 +411,7 @@ void SetVideoMode(int, int);
 void SetMenuVideoMode();
 void CreateDivTable();
 void DrawTexturedFace();
-int GetTextW(HDC, LPSTR);
+int GetTextW(HDC, LPCSTR);
 void InitMenu();
 void wait_mouse_release();
 
@@ -451,8 +460,8 @@ void CreateMorphedModel(TModel* mptr, TAni *aptr, int FTime);
 void  NormVector(Vector3d&, float); 
 float SGN(float);
 void  DeltaFunc(float &a, float b, float d);
-void  MulVectorsScal(Vector3d&, Vector3d&, float&);
-void  MulVectorsVect(Vector3d&, Vector3d&, Vector3d&);
+void  MulVectorsScal(const Vector3d&, const Vector3d&, float&);
+void  MulVectorsVect(const Vector3d&, const Vector3d&, Vector3d&);
 Vector3d SubVectors( Vector3d&, Vector3d& );
 Vector3d RotateVector(Vector3d&);
 float VectorLength(Vector3d);
@@ -472,22 +481,22 @@ int   TraceLook(float ax, float ay, float az,
 void CheckCollision(float&, float&);
 float CalcFogLevel(Vector3d v);
 //=================================================================//
-void AddMessage(LPSTR mt);
+void AddMessage(LPCSTR mt);
 void CreateTMap();
 void ScrollWater();
 
 void LoadSky();
 void LoadSkyMap();
 void LoadTexture(TEXTURE*&);
-void LoadWav(char* FName, TSFX &sfx);
-void LoadTextFile(TText &txt, char* FName);
+void LoadWav(LPCSTR FName, TSFX &sfx);
+void LoadTextFile(TText &txt, LPCSTR FName);
 
 WORD conv_565(WORD c);
 void conv_pic(TPicture &pic);
 void LoadPicture(TPicture &pic, LPSTR pname);
-void LoadPictureTGA(TPicture &pic, LPSTR pname);
-void LoadCharacterInfo(TCharacterInfo&, char*);
-void LoadModelEx(TModel* &mptr, char* FName);
+void LoadPictureTGA(TPicture &pic, LPCSTR pname);
+void LoadCharacterInfo(TCharacterInfo& chInfo, LPCSTR filePath);
+void LoadModelEx(TModel* &mptr, LPCSTR FName);
 void LoadModel(TModel*&);
 void LoadResources();
 
@@ -498,8 +507,8 @@ void CreateFadeTab();
 void CreateVideoDIB();
 void RenderLightMap();
 
-void MulVectorsVect(Vector3d& v1, Vector3d& v2, Vector3d& r );
-void MulVectorsScal(Vector3d& v1,Vector3d& v2, float& r);
+void MulVectorsVect(const Vector3d& v1, const Vector3d& v2, Vector3d& r );
+void MulVectorsScal(const Vector3d& v1, const Vector3d& v2, float& r);
 Vector3d SubVectors( Vector3d& v1, Vector3d& v2 );
 void NormVector(Vector3d& v, float Scale);
 
@@ -528,11 +537,11 @@ void MakeShot(float ax, float ay, float az,
               float bx, float by, float bz);
 
 void AnimateProcesses();
-void DoHalt(LPSTR);
+void DoHalt(LPCSTR);
 
 _EXTORNOT   char logt[128];
 void CreateLog();
-void PrintLog(LPSTR l);
+void PrintLog(LPCSTR l);
 void CloseLog();
 
 _EXTORNOT   float BackViewR;
@@ -742,7 +751,7 @@ _EXTORNOT int  CameraFogI;
 _EXTORNOT int OptAgres, OptDens, OptSens, OptRes, OptText, OptSys, WaitKey, OPT_ALPHA_COLORKEY;
 _EXTORNOT BOOL SHADOWS3D,REVERSEMS;
 
-_EXTORNOT BOOL SLOW, DEBUG, MORPHP, MORPHA;
+_EXTORNOT BOOL SLOW, DEBUGMODE, MORPHP, MORPHA;
 
 
 

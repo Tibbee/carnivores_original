@@ -1,5 +1,4 @@
 #include "Hunt.h"
-#include "stdio.h"
 
 BOOL NewPhase;
 
@@ -219,8 +218,8 @@ void ThinkY_Beta_Gamma(TCharacter *cptr, float blook, float glook, float blim, f
     if (cptr->tggamma > glim) cptr->tggamma = glim;
     if (cptr->tggamma <-glim) cptr->tggamma =-glim;      
 /*
-	if (DEBUG) cptr->tggamma = 0;
-	if (DEBUG) cptr->beta    = 0;
+	if (DEBUGMODE) cptr->tggamma = 0;
+	if (DEBUGMODE) cptr->beta    = 0;
 	*/
 }
 
@@ -3095,7 +3094,7 @@ void CheckAfraid()
    Vector3d ppos, plook, clook, wlook, rlook;
    ppos = PlayerPos;
 
-   if (DEBUG || UNDERWATER || ObservMode) return;
+   if (DEBUGMODE || UNDERWATER || ObservMode) return;
 
    plook.y = 0;
    plook.x = (float) sin(CameraAlpha);

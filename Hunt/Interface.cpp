@@ -1,6 +1,5 @@
 #define INITGUID
 #include "Hunt.h"
-#include "stdio.h"
 
 typedef struct _TMenuSet {
 	int x0, y0;
@@ -31,7 +30,7 @@ int  MapVKKey(int k)
 	return MapVirtualKey(k , 0);
 }
 
-void AddMenuItem(TMenuSet &ms, LPSTR txt)
+void AddMenuItem(TMenuSet &ms, LPCSTR txt)
 {
 	wsprintf(ms.Item[ms.Count++], "%s", txt);
 }
@@ -50,16 +49,16 @@ void wait_mouse_release()
 }
 
 
-int GetTextW(HDC hdc, LPSTR s)
+int GetTextW(HDC hdc, LPCSTR s)
 {
   SIZE sz;
   GetTextExtentPoint(hdc, s, strlen(s), &sz);
   return sz.cx;
 }
 
-void PrintText(LPSTR s, int x, int y, int rgb)
+void PrintText(LPCSTR s, int x, int y, int rgb)
 {
-  HBITMAP hbmpOld = SelectObject(hdcCMain,hbmpVideoBuf);   
+  HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(hdcCMain,hbmpVideoBuf));   
   SetBkMode(hdcCMain, TRANSPARENT);     
    
   SetTextColor(hdcCMain, 0x00000000);  
@@ -70,7 +69,7 @@ void PrintText(LPSTR s, int x, int y, int rgb)
   SelectObject(hdcCMain,hbmpOld);		  
 }
 
-void DoHalt(LPSTR Mess)
+void DoHalt(LPCSTR Mess)
 {
   if (!HARD3D)
    if (DirectActive)
@@ -119,7 +118,7 @@ void InitDirectDraw()
    if (HARD3D) cl = DDSCL_NORMAL; else cl = DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN;   
    cl = DDSCL_EXCLUSIVE|DDSCL_FULLSCREEN;
 
-#ifdef _DEBUG
+#ifdef _DEBUGMODE
    cl = DDSCL_NORMAL;
 #endif
    
@@ -354,7 +353,7 @@ void ReloadAreaInfo()
 
 void LoadMenuTGA()
 {    
-    LPSTR m1,m2,mm;
+    LPCSTR m1,m2,mm;
 	MenuSelect = 0;
 
     switch (MenuState) {
@@ -434,7 +433,7 @@ void LoadMenuTGA()
     if( hfile == INVALID_HANDLE_VALUE ) return;
     SetFilePointer(hfile, 18, 0, FILE_BEGIN);
     //ReadFile( hfile, lpMenuBuf2, 800*600*2, &l, NULL );       
-	for (y=599; y>=0; y--) ReadFile( hfile, (WORD*)lpMenuBuf2+y*800,  800*2, &l, NULL );       
+	for (int y=599; y>=0; y--) ReadFile( hfile, (WORD*)lpMenuBuf2+y*800,  800*2, &l, NULL );       
     CloseHandle( hfile ); 
     Sleep(2);
 
@@ -456,7 +455,7 @@ void LoadMenuTGA()
 void ShowMenuVideo()
 {
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
   if (RestartMode) 
 	  FillMemory(lpVideoBuf, 1024*600*2, 0);
   BitBlt(hdcMain,0,0,800,600, _hdc,0,0, SRCCOPY);
@@ -490,9 +489,9 @@ void DrawSlider(int x, int y, float l)
 	HPEN wp = CreatePen(PS_SOLID, 0, 0x009F9F9F);
 	HBRUSH wb = CreateSolidBrush(0x003FAF3F);
 
-    HPEN oldpen = SelectObject(hdcCMain, GetStockObject(BLACK_PEN));
-	HBRUSH  oldbrs = SelectObject(hdcCMain, GetStockObject(BLACK_BRUSH));
-	HBITMAP oldbmp = SelectObject(hdcCMain,hbmpVideoBuf);   
+    HPEN oldpen = reinterpret_cast<HPEN>(SelectObject(hdcCMain, GetStockObject(BLACK_PEN)));
+	HBRUSH  oldbrs = reinterpret_cast<HBRUSH>(SelectObject(hdcCMain, GetStockObject(BLACK_BRUSH)));
+	HBITMAP oldbmp = reinterpret_cast<HBITMAP>(SelectObject(hdcCMain,hbmpVideoBuf));   
 	
 
 	x+=1; y+=1; 
@@ -531,7 +530,7 @@ void DrawSlider(int x, int y, float l)
 
 void DrawOptions()
 {
-	HFONT oldfont = SelectObject(hdcCMain, fnt_BIG);
+	HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcCMain, fnt_BIG));
 	
 	for (int m=0; m<3; m++) 
 		for (int l=0; l<Options[m].Count; l++) {
@@ -606,7 +605,7 @@ void DrawOptions()
 
 void DrawMainStats()
 {
-   HFONT oldfont = SelectObject(hdcCMain, fnt_BIG);
+   HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcCMain, fnt_BIG));
    char t[32];
    int  c = 0x003070A0;
 
@@ -634,21 +633,21 @@ void DrawMainStats2()
 
    PrintText("Path travelled  ", 718 - GetTextW(hdcCMain,"Path travelled  "), 78, c);
    
-   if (OptSys)  sprintf(t,"%1.0f ft.", TrophyRoom.Last.path / 0.3f);
-   else         sprintf(t,"%1.0f m.", TrophyRoom.Last.path);
+   if (OptSys)  sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Last.path / 0.3f);
+   else         sprintf_s(t, sizeof(t), "%1.0f m.", TrophyRoom.Last.path);
 
    PrintText(t, 718, 78, c);
 
    PrintText("Time hunted  ", 718 - GetTextW(hdcCMain,"Time hunted  "), 98, c);
-   sprintf(t,"%d:%02d:%02d", (ltm / 3600), ((ltm % 3600) / 60), (ltm % 60) );
+   sprintf_s(t, sizeof(t), "%d:%02d:%02d", (ltm / 3600), ((ltm % 3600) / 60), (ltm % 60) );
    PrintText(t, 718, 98, c);
 
    PrintText("Shots made  ", 718 - GetTextW(hdcCMain,"Shots made  "), 118, c);
-   sprintf(t,"%d", TrophyRoom.Last.smade);
+   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.smade);
    PrintText(t, 718, 118, c);
 
    PrintText("Shots succeed  ", 718 - GetTextW(hdcCMain,"Shots succeed  "), 138, c);
-   sprintf(t,"%d", TrophyRoom.Last.ssucces);
+   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.ssucces);
    PrintText(t, 718, 138, c);
 
 
@@ -656,30 +655,30 @@ void DrawMainStats2()
 
    PrintText("Path travelled  ", 718 - GetTextW(hdcCMain,"Path travelled  "), 208, c);
    if (TrophyRoom.Total.path < 1000)
-    if (OptSys)  sprintf(t,"%1.0f ft.", TrophyRoom.Total.path / 0.3f);
-    else         sprintf(t,"%1.0f m.", TrophyRoom.Total.path);
+    if (OptSys)  sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Total.path / 0.3f);
+    else         sprintf_s(t, sizeof(t),"%1.0f m.", TrophyRoom.Total.path);
    else
-	if (OptSys)  sprintf(t,"%1.1f miles.", TrophyRoom.Total.path / 1667);
-    else         sprintf(t,"%1.1f km.", TrophyRoom.Total.path / 1000.f);
+	if (OptSys)  sprintf_s(t, sizeof(t),"%1.1f miles.", TrophyRoom.Total.path / 1667);
+    else         sprintf_s(t, sizeof(t),"%1.1f km.", TrophyRoom.Total.path / 1000.f);
 
 
    PrintText(t, 718, 208, c);
 
    PrintText("Time hunted  ", 718 - GetTextW(hdcCMain,"Time hunted  "), 228, c);
-   sprintf(t,"%d:%02d:%02d", (ttm / 3600), ((ttm % 3600) / 60), (ttm % 60) );
+   sprintf_s(t, sizeof(t),"%d:%02d:%02d", (ttm / 3600), ((ttm % 3600) / 60), (ttm % 60) );
    PrintText(t, 718, 228, c);
 
    PrintText("Shots made  ", 718 - GetTextW(hdcCMain,"Shots made  "), 248, c);
-   sprintf(t,"%d", TrophyRoom.Total.smade);
+   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Total.smade);
    PrintText(t, 718, 248, c);
 
    PrintText("Shots succeed  ", 718 - GetTextW(hdcCMain,"Shots succeed  "), 268, c);
-   sprintf(t,"%d", TrophyRoom.Total.ssucces);
+   sprintf_s (t, sizeof(t),"%d", TrophyRoom.Total.ssucces);
    PrintText(t, 718, 268, c);
 
    PrintText("Succes ratio  ", 718 - GetTextW(hdcCMain,"Succes ratio  "), 288, c);
    if (TrophyRoom.Total.smade)
-     sprintf(t,"%d%%", TrophyRoom.Total.ssucces * 100 / TrophyRoom.Total.smade);
+     sprintf_s(t,sizeof(t),"%d%%", TrophyRoom.Total.ssucces * 100 / TrophyRoom.Total.smade);
    else
 	 wsprintf(t,"100%%");
    PrintText(t, 718, 288, c);   
@@ -799,10 +798,10 @@ void CopyMenuToVideo(int m)
 	 
 
    if (MenuSelect==3)
-    for (t=0; t<ObserText.Lines; t++)
+    for (int t=0; t<ObserText.Lines; t++)
       PrintText(ObserText.Text[t], 50, 330+t*16, 0x809F25);   
    else
-    for (t=0; t<LandText.Lines; t++)
+    for (int t=0; t<LandText.Lines; t++)
       PrintText(LandText.Text[t], 50, 330+t*16, 0x809F25);   
   }
 
@@ -873,6 +872,7 @@ void SelectMenu0(int s)
 	  if (WinW==512) OptRes=2;
 	  if (WinW==640) OptRes=3;
 	  if (WinW==800) OptRes=4;
+	  //if (WinW==2560) OptRes=5;
 	  if (WinW==1024) OptRes=5;
 
 	  MenuState=3;
@@ -1168,7 +1168,7 @@ void IdentifyPlayer()
 	   }
 
 //=== search for free slot =======//
-   for (i=0; i<6; i++)
+   for (int i=0; i<6; i++)
 	   if (!PlayerR[i].PName[0]) {
 		   NEWPLAYER = TRUE;
 		   CurPlayer=i;
@@ -1275,7 +1275,8 @@ void ProcessOptionsMenu()
 		if (OptRes==1) { WinW = 400; WinH=300; }
 		if (OptRes==2) { WinW = 512; WinH=384; }
 		if (OptRes==3) { WinW = 640; WinH=480; }
-		if (OptRes==4) { WinW = 800; WinH=600; }		
+		if (OptRes==4) { WinW = 800; WinH=600; }
+		//if (OptRes==5) { WinW =2560; WinH=1440; }		
 		if (OptRes==5) { WinW =1024; WinH=768; }		
 		
 		SaveTrophy();
@@ -1463,6 +1464,7 @@ void InitMenu()
 	wsprintf(Restxt[2],"512x384");
 	wsprintf(Restxt[3],"640x480");
 	wsprintf(Restxt[4],"800x600");
+	//wsprintf(Restxt[5],"1024x768");
 	wsprintf(Restxt[5],"1024x768");
 	wsprintf(Restxt[6],"1280x1024");
 

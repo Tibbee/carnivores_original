@@ -1,8 +1,9 @@
 #include <windows.h>
 #include <math.h>
+#include "stdio.h"
 
 #define _AUDIO_
-#include "audio.h"
+#include "Audio.h"
 
 HANDLE hAudioThread;
 DWORD  AudioTId;
@@ -10,7 +11,7 @@ WAVEFORMATEX wf;
 HWND hwndApp;
 BOOL AudioNeedRestore;
 char logtt[128];
-void PrintLog(LPSTR l);
+void PrintLog(LPCSTR l);
 
 DWORD WINAPI ProcessAudioThread (LPVOID ptr)
 {
@@ -63,7 +64,7 @@ int InitDirectSound( HWND hwnd)
 
    hres = DirectSoundEnumerate( (LPDSENUMCALLBACK)EnumerateSoundDevice, NULL);
    if( hres != DS_OK ) {
-      wsprintf(logtt, "DirectSoundEnumerate Error: %Xh\n", hres);
+      sprintf_s(logtt, sizeof(logtt), "DirectSoundEnumerate Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }
@@ -75,7 +76,7 @@ int InitDirectSound( HWND hwnd)
 
 
    iTotal16SD = 0;
-   for( i = 0; i < iTotalSoundDevices; i++ ) {
+   for(int i = 0; i < iTotalSoundDevices; i++ ) {
       LPDIRECTSOUND lpds;
       if( DirectSoundCreate( sdd[i].lpGuid, &lpds, NULL ) != DS_OK ) continue;
 
@@ -84,7 +85,7 @@ int InitDirectSound( HWND hwnd)
       if( sdd[i].lpDSC->dwFlags & (DSCAPS_PRIMARY16BIT | DSCAPS_PRIMARYSTEREO | DSCAPS_SECONDARY16BIT | DSCAPS_SECONDARYSTEREO ) ) {
          sdd[i].status = 1;
          iTotal16SD++;
-		 wsprintf(logtt,"Acceptable device: %d\n",i);
+		 sprintf_s(logtt, sizeof(logtt),"Acceptable device: %d\n",i);
 		 PrintLog(logtt);
       }
    }
@@ -94,13 +95,13 @@ int InitDirectSound( HWND hwnd)
    while( !sdd[iCurrentDriver].status )
 	   iCurrentDriver++;
    
-   wsprintf(logtt,"Device selected  : %d\n",iCurrentDriver);
+   sprintf_s(logtt, sizeof(logtt),"Device selected  : %d\n",iCurrentDriver);
    PrintLog(logtt);
 
 
    hres = DirectSoundCreate( sdd[iCurrentDriver].lpGuid, &lpDS, NULL );   
    if( (hres != DS_OK) || (!lpDS) ) {
-	  wsprintf(logtt, "DirectSoundCreate Error: %Xh\n", hres);
+	  sprintf_s(logtt, sizeof(logtt),"DirectSoundCreate Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }
@@ -111,7 +112,7 @@ int InitDirectSound( HWND hwnd)
    PrintLog("Attempting to set WRITEPRIMARY CooperativeLevel:\n");
    hres = lpDS->SetCooperativeLevel( hwnd, DSSCL_WRITEPRIMARY );
    if (hres != DS_OK) {	  
-	  wsprintf(logtt, "SetCooperativeLevel Error: %Xh\n", hres);
+	  sprintf_s(logtt, sizeof(logtt),"SetCooperativeLevel Error: %Xh\n", hres);
 	  PrintLog(logtt);
       PrimaryMode = FALSE;
    } else
@@ -122,7 +123,7 @@ int InitDirectSound( HWND hwnd)
 	   PrintLog("Attempting to set EXCLUSIVE CooperativeLevel:\n");
 	   hres = lpDS->SetCooperativeLevel( hwnd, DSSCL_EXCLUSIVE);
        if (hres != DS_OK) {	     
-	     wsprintf(logtt, "==>>SetCooperativeLevel Error: %Xh\n", hres);
+	     sprintf_s(logtt, sizeof(logtt),"==>>SetCooperativeLevel Error: %Xh\n", hres);
 	     PrintLog(logtt);
 		 return 0;
 	   }   
@@ -142,7 +143,7 @@ int InitDirectSound( HWND hwnd)
    
    hres = lpDS->CreateSoundBuffer( &dsbd, &lpdsPrimary, NULL );
    if( hres != DS_OK ) {
-	  wsprintf(logtt, "==>>CreatePrimarySoundBuffer Error: %Xh\n", hres);
+	  sprintf_s(logtt,sizeof(logtt), "==>>CreatePrimarySoundBuffer Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -151,7 +152,7 @@ int InitDirectSound( HWND hwnd)
 
    hres = lpdsPrimary->SetFormat( &wf );
    if( hres != DS_OK ) {
-	  wsprintf(logtt, "SetFormat Error: %Xh\n", hres);
+	  sprintf_s(logtt, sizeof(logtt),"SetFormat Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -172,7 +173,7 @@ int InitDirectSound( HWND hwnd)
    
    hres = lpDS->CreateSoundBuffer( &dsbd, &lpdsSecondary, NULL );
    if( hres != DS_OK ) {
-	  wsprintf(logtt, "CreateSecondarySoundBuffer Error: %Xh\n", hres);
+	  sprintf_s(logtt, sizeof(logtt),"CreateSecondarySoundBuffer Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -191,7 +192,7 @@ SKIPSECONDARY:
          
    hres = lpdsWork->Play( 0, 0, DSBPLAY_LOOPING );
    if( hres != DS_OK ) {
-      wsprintf(logtt, "Play Error: %Xh\n", hres);
+      sprintf_s(logtt, sizeof(logtt),"Play Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;   
    }
@@ -327,11 +328,17 @@ int AddVoice(int length, short int* lpdata)
 BOOL CALLBACK EnumerateSoundDevice( GUID* lpGuid, LPSTR lpstrDescription, LPSTR lpstrModule, LPVOID lpContext)
 {
    if( lpGuid == NULL )
-       if( !iTotalSoundDevices )
-           return TRUE;
+   {
+     if( !iTotalSoundDevices )
+       {
+            return TRUE;
+       }         
        else
-           return FALSE;   
-   wsprintf(logtt,"Device%d: ",iTotalSoundDevices);
+       {
+           return FALSE;
+       }     
+   }            
+   sprintf_s(logtt,sizeof(logtt),"Device%d: ",iTotalSoundDevices);
    PrintLog(logtt);
    PrintLog(lpstrDescription);
    PrintLog("/");
@@ -574,7 +581,6 @@ _asm {
      }
       
 SOUND_CYCLE :
-
 _asm {                
        movsx    eax, word ptr [esi]
        imul     LVolume

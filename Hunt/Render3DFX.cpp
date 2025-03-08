@@ -3,7 +3,6 @@
 
 #include <glide.h>
 #include <sst1vid.h>
-#include <stdio.h>
 
 void RenderShadowClip (TModel*, float, float, float, float, float, float, int, float, float);
 
@@ -662,15 +661,15 @@ void DrawPicture(int x, int y, TPicture &pic)
 
 
 
-void FXTextOut(int x, int y, LPSTR t, int color)
+void FXTextOut(int x, int y, LPCSTR t, int color)
 {
 
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
   SetBkMode(_hdc, TRANSPARENT);
 
   HFONT oldfont;
-  if (SmallFont) oldfont = SelectObject(_hdc, fnt_Small);
+  if (SmallFont) oldfont = reinterpret_cast<HFONT>(SelectObject(_hdc, fnt_Small));
 
   int w = GetTextW(_hdc, t)+4;
   for (int h=0; h<18; h++)
@@ -696,7 +695,7 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+    HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 	int tc = TrophyBody;
 
 	int   dtype = TrophyRoom.Body[tc].ctype;
@@ -716,18 +715,18 @@ void DrawTrophyText(int x0, int y0)
 	x = x0;
 	FXTextOut(x, y0+16, "Weight: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weight: ");
 	if (OptSys)
-     sprintf(t,"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
+     sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
 	else
-     sprintf(t,"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
+     sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
      
 
     FXTextOut(x, y0+16, t, 0x0000BFBF);    x+=GetTextW(hdcMain,t);
     FXTextOut(x, y0+16, "Length: ", 0x00BFBFBF); x+=GetTextW(hdcMain,"Length: ");
      
 	if (OptSys)
-	 sprintf(t,"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
+	 sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
 	else
-	 sprintf(t,"%3.2fm", DinoInfo[dtype].Length * scale);
+	 sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
 
 	FXTextOut(x, y0+16, t, 0x0000BFBF); 
 	
@@ -742,8 +741,8 @@ void DrawTrophyText(int x0, int y0)
 
 	x = x0;
 	FXTextOut(x, y0+48, "Range of kill: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Range of kill: ");
-	if (OptSys) sprintf(t,"%3.1fft", range / 0.3);
-	else        sprintf(t,"%3.1fm", range);
+	if (OptSys) sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
+	else        sprintf_s(t,sizeof(t),"%3.1fm", range);
     FXTextOut(x, y0+48, t, 0x0000BFBF);  
 
 
@@ -771,7 +770,7 @@ void Render_LifeInfo(int li)
 {
 	int x,y;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+    HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 		
 	int   ctype = Characters[li].CType;
 	float  scale = Characters[li].scale;	
@@ -782,8 +781,8 @@ void Render_LifeInfo(int li)
 		
     FXTextOut(x, y, DinoInfo[ctype].Name, 0x0000b000);    
 		
-	if (OptSys) sprintf(t,"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
-	else        sprintf(t,"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
+	if (OptSys) sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
+	else        sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
     
 	FXTextOut(x, y+16, t, 0x0000b000);
     
@@ -1796,9 +1795,15 @@ void RenderShadowClip(TModel* _mptr,
     CMASK|=gScrp[fptr->v2].y;
     CMASK|=gScrp[fptr->v3].y;         
 
-    cp[0].ev.v = rVertex[fptr->v1];  cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay; 
-    cp[1].ev.v = rVertex[fptr->v2];  cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby; 
-    cp[2].ev.v = rVertex[fptr->v3];  cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy; 
+    cp[0].ev.v = rVertex[fptr->v1];  
+    cp[0].tx = static_cast<float>(fptr->tax);  
+    cp[0].ty = static_cast<float>(fptr->tay); 
+    cp[1].ev.v = rVertex[fptr->v2];  
+    cp[1].tx = static_cast<float>(fptr->tbx);  
+    cp[1].ty = static_cast<float>(fptr->tby); 
+    cp[2].ev.v = rVertex[fptr->v3];  
+    cp[2].tx = static_cast<float>(fptr->tcx);  
+    cp[2].ty = static_cast<float>(fptr->tcy); 
 
     if (CMASK == 0xFF) {
      for (u=0; u<vused; u++) cp[u].ev.v.z+=16.0f;
@@ -1945,9 +1950,21 @@ void RenderModelClip(TModel* _mptr, float x0, float y0, float z0, int light, flo
     CMASK|=gScrp[fptr->v3].y;         
 
 	
-    cp[0].ev.v = rVertex[fptr->v1]; cp[0].ev.Fog = vFogT[fptr->v1];  cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay;  cp[0].ev.Light = (int)mptr->VLight[fptr->v1];
-    cp[1].ev.v = rVertex[fptr->v2]; cp[1].ev.Fog = vFogT[fptr->v2];  cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby;  cp[1].ev.Light = (int)mptr->VLight[fptr->v2];
-    cp[2].ev.v = rVertex[fptr->v3]; cp[2].ev.Fog = vFogT[fptr->v3];  cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy;  cp[2].ev.Light = (int)mptr->VLight[fptr->v3]; 
+    cp[0].ev.v = rVertex[fptr->v1]; 
+    cp[0].ev.Fog = vFogT[fptr->v1];  
+    cp[0].tx = static_cast<float>(fptr->tax);  
+    cp[0].ty = static_cast<float>(fptr->tay);  
+    cp[0].ev.Light = (int)mptr->VLight[fptr->v1];
+    cp[1].ev.v = rVertex[fptr->v2]; 
+    cp[1].ev.Fog = vFogT[fptr->v2];  
+    cp[1].tx = static_cast<float>(fptr->tbx);  
+    cp[1].ty = static_cast<float>(fptr->tby);  
+    cp[1].ev.Light = (int)mptr->VLight[fptr->v2];
+    cp[2].ev.v = rVertex[fptr->v3];
+    cp[2].ev.Fog = vFogT[fptr->v3];  
+    cp[2].tx = static_cast<float>(fptr->tcx);  
+    cp[2].ty = static_cast<float>(fptr->tcy);  
+    cp[2].ev.Light = (int)mptr->VLight[fptr->v3]; 
 
     //if (CMASK == 0xFF) 
 	{
@@ -2280,7 +2297,7 @@ void Render3DHardwarePosts()
 
 
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;

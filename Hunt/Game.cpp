@@ -7,6 +7,7 @@ void SetupRes()
 	if (OptRes==2) { WinW = 512; WinH=384; }
 	if (OptRes==3) { WinW = 640; WinH=480; }
 	if (OptRes==4) { WinW = 800; WinH=600; }
+	//if (OptRes==5) { WinW =2560; WinH=1440; }
 	if (OptRes==5) { WinW =1024; WinH=768; }		
 
 }
@@ -188,7 +189,7 @@ void ProcessCommandLine()
      if (strstr(s,"/vmode3")) SetVideoMode(512, 384);
      if (strstr(s,"/vmode4")) SetVideoMode(640, 480);
      if (strstr(s,"/vmode5")) SetVideoMode(800, 600);     
-     if (strstr(s,"prj=")) { strcpy(ProjectName, (s+4)); GameState = 1; }
+     if (strstr(s,"prj=")) { strcpy_s(ProjectName, sizeof(ProjectName), s+4); GameState = 1; }
   } 
 }
 
@@ -285,21 +286,21 @@ void InitShip(int cindex)
 
 void InitGameInfo()
 {
-    WeapInfo[0].Name = "Shotgun";
+    strcpy_s(WeapInfo[0].Name, sizeof(WeapInfo[0].Name), "Shotgun");
 	WeapInfo[0].Power = 1.5f;
 	WeapInfo[0].Prec  = 1.1f;
 	WeapInfo[0].Loud  = 0.3f;
 	WeapInfo[0].Rate  = 1.6f;
 	WeapInfo[0].Shots = 6;
 
-	WeapInfo[1].Name = "X-Bow";
+	strcpy_s(WeapInfo[1].Name, sizeof(WeapInfo[1].Name), "X-Bow");
 	WeapInfo[1].Power = 1.1f;
 	WeapInfo[1].Prec  = 0.7f;
 	WeapInfo[1].Loud  = 1.9f;
 	WeapInfo[1].Rate  = 1.2f;
 	WeapInfo[1].Shots = 8;
 
-    WeapInfo[2].Name = "Sniper Rifle";
+    strcpy_s(WeapInfo[1].Name, sizeof(WeapInfo[1].Name), "Sniper Rifle");
 	WeapInfo[2].Power = 1.0f;
 	WeapInfo[2].Prec  = 1.8f;
 	WeapInfo[2].Loud  = 0.6f;
@@ -313,22 +314,21 @@ void InitGameInfo()
 	}
 
 
-	DinoInfo[ 0].Name = "Moschops";
+	strcpy_s(DinoInfo[0].Name, sizeof(DinoInfo[0].Name), "Moschops");
 	DinoInfo[ 0].Health0 = 2;
 	DinoInfo[ 0].Mass = 0.15f;
 
-    DinoInfo[ 1].Name = "Galimimus";
+	strcpy_s(DinoInfo[1].Name, sizeof(DinoInfo[1].Name), "Gallimimus");
 	DinoInfo[ 1].Health0 = 2;
 	DinoInfo[ 1].Mass = 0.1f;
 
-	DinoInfo[ 2].Name = "Dimorphodon";
+	strcpy_s(DinoInfo[2].Name, sizeof(DinoInfo[2].Name), "Dimorphodon");
     DinoInfo[ 2].Health0 = 1;
 	DinoInfo[ 2].Mass = 0.05f;
 
-	DinoInfo[ 3].Name = "";
+	strcpy_s(DinoInfo[3].Name, sizeof(DinoInfo[3].Name), "");
 
-
-	DinoInfo[ 4].Name = "Parasaurolophus";
+	strcpy_s(DinoInfo[4].Name, sizeof(DinoInfo[4].Name), "Parasaurolophus");
 	DinoInfo[ 4].Mass = 1.5f;
 	DinoInfo[ 4].Length = 5.8f;
 	DinoInfo[ 4].Radius = 320.f;
@@ -337,7 +337,7 @@ void InitGameInfo()
 	DinoInfo[ 4].SmellK = 0.8f; DinoInfo[ 4].HearK = 1.f; DinoInfo[ 4].LookK = 0.4f;
 	DinoInfo[ 4].ShDelta = 48;
 
-	DinoInfo[ 5].Name = "Pachycephalosaurus";
+	strcpy_s(DinoInfo[5].Name, sizeof(DinoInfo[5].Name), "Pachycephalosaurus");
 	DinoInfo[ 5].Mass = 0.8f;
 	DinoInfo[ 5].Length = 4.5f;
 	DinoInfo[ 5].Radius = 280.f;
@@ -346,7 +346,7 @@ void InitGameInfo()
 	DinoInfo[ 5].SmellK = 0.4f; DinoInfo[ 5].HearK = 0.8f; DinoInfo[ 5].LookK = 0.6f;
 	DinoInfo[ 5].ShDelta = 36;
 
-	DinoInfo[ 6].Name = "Stegosaurus";
+	strcpy_s(DinoInfo[6].Name, sizeof(DinoInfo[6].Name), "Stegosaurus");
     DinoInfo[ 6].Mass = 7.f;
 	DinoInfo[ 6].Length = 7.f;
 	DinoInfo[ 6].Radius = 480.f;
@@ -355,7 +355,7 @@ void InitGameInfo()
 	DinoInfo[ 6].SmellK = 0.4f; DinoInfo[ 6].HearK = 0.8f; DinoInfo[ 6].LookK = 0.6f;
 	DinoInfo[ 6].ShDelta = 128;
 
-	DinoInfo[ 7].Name = "Allosaurus";
+	strcpy_s(DinoInfo[7].Name, sizeof(DinoInfo[7].Name), "Allosaurus");
 	DinoInfo[ 7].Mass = 0.5;
 	DinoInfo[ 7].Length = 4.2f;
 	DinoInfo[ 7].Radius = 256.f;
@@ -367,7 +367,7 @@ void InitGameInfo()
 	DinoInfo[ 7].ShDelta = 32;
 	DinoInfo[ 7].DangerCall = TRUE;
 
-	DinoInfo[ 8].Name = "Triceratops";
+	strcpy_s(DinoInfo[8].Name, sizeof(DinoInfo[8].Name), "Triceratops");
 	DinoInfo[ 8].Mass = 3.f;
 	DinoInfo[ 8].Length = 5.0f;
 	DinoInfo[ 8].Radius = 512.f;
@@ -376,7 +376,7 @@ void InitGameInfo()
 	DinoInfo[ 8].SmellK = 0.6f; DinoInfo[ 8].HearK = 0.5f; DinoInfo[ 8].LookK = 0.4f;
 	DinoInfo[ 8].ShDelta = 148;
 
-	DinoInfo[ 9].Name = "Velociraptor";
+	strcpy_s(DinoInfo[9].Name, sizeof(DinoInfo[9].Name), "Velociraptor");
 	DinoInfo[ 9].Mass = 0.3f;
 	DinoInfo[ 9].Length = 4.0f;
 	DinoInfo[ 9].Radius = 256.f;
@@ -387,7 +387,7 @@ void InitGameInfo()
 	DinoInfo[ 9].ShDelta =-24;
 	DinoInfo[ 9].DangerCall = TRUE;
 
-	DinoInfo[10].Name = "T-Rex";
+	strcpy_s(DinoInfo[10].Name, sizeof(DinoInfo[10].Name), "T-Rex");
     DinoInfo[10].Mass = 6.f;
 	DinoInfo[10].Length = 12.f;
 	DinoInfo[10].Radius = 400.f;
@@ -417,7 +417,7 @@ void InitEngine()
     NOCLIP       = FALSE;
     CLIP3D       = TRUE;
 
-    DEBUG        = FALSE;
+    DEBUGMODE    = FALSE;
     SLOW         = FALSE;
 	LOWRESTX     = FALSE;
     MORPHP       = TRUE;
@@ -506,7 +506,7 @@ void InitEngine()
 
     PlayerX = (ctMapSize / 2) * 256;
 	PlayerZ = (ctMapSize / 2) * 256;
-    strcpy(ProjectName,"hunt");
+    strcpy_s(ProjectName, sizeof(ProjectName), "hunt");
 
     ProcessCommandLine();    
     

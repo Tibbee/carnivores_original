@@ -33,13 +33,13 @@ void DeltaFunc(float &a, float b, float d)
 }
 
 
-void MulVectorsScal(Vector3d& v1,Vector3d& v2, float& r)
+void MulVectorsScal(const Vector3d& v1, const Vector3d& v2, float& r)
 {
   r = v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
 
-void MulVectorsVect(Vector3d& v1, Vector3d& v2, Vector3d& r )
+void MulVectorsVect(const Vector3d& v1, const Vector3d& v2, Vector3d& r )
 {
   r.x= v1.y*v2.z - v2.y*v1.z;
   r.y=-v1.x*v2.z + v2.x*v1.z;
@@ -517,7 +517,7 @@ void CalcLights(TModel* mptr)
 	for (int v=0; v<VCount; v++) {
 		FUsed = 0;
 		nv.x=0; nv.y=0; nv.z=0;
-		for (f=0; f<FCount; f++) 
+		for (int f=0; f<FCount; f++) 
 		  if (!(mptr->gFace[f].Flags & sfOpacity) )
 			if (mptr->gFace[f].v1 == v || mptr->gFace[f].v2 == v || mptr->gFace[f].v3 == v ) 
 			{ FUsed++;  nv = AddVectors(nv, norms[f]); }	
@@ -526,7 +526,7 @@ void CalcLights(TModel* mptr)
 		else {
            NormVector(nv, 1.0f);
            MulVectorsScal(nv, slight, c);
-		   mptr->VLight[v] = (int)((c-0.40f) * 60.f);
+           mptr->VLight[v] = static_cast<int>((c - 0.40f) * 60.f);
 		}  
 	}
 

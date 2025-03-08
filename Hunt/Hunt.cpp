@@ -402,7 +402,7 @@ NOSHIP: ;
 
 //============= Dinosaurs ====================//
    TCharacter *cptr;
-   for (c=0; c<ChCount; c++) {
+   for (int c=0; c<ChCount; c++) {
       cptr = &Characters[c];
       cptr->rpos.x = cptr->pos.x - CameraX;
       cptr->rpos.y = cptr->pos.y - CameraY;
@@ -433,7 +433,7 @@ NOSHIP: ;
 
 //============= Explosions =================//
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;
@@ -632,7 +632,7 @@ SKIPWIND:
   
   wptr->shakel+= TimeDt / 10000.f;
   if (wptr->shakel > 4.0f) wptr->shakel = 4.0f;
-  //if (DEBUG) wptr->shakel = 0.0f;
+  //if (DEBUGMODE) wptr->shakel = 0.0f;
 
   if (wptr->state == 1) {
     wptr->FTime+=TimeDt;
@@ -723,7 +723,7 @@ SKIPWEAPON:
 
 
 
-void SwitchMode(LPSTR lps, BOOL& b)
+void SwitchMode(LPCSTR lps, BOOL& b)
 {
   b = !b;
   char buf[200];
@@ -849,7 +849,7 @@ LONG APIENTRY MainWndProc( HWND hWnd, UINT message, UINT wParam, LONG lParam)
 			if ((int)wParam == KeyMap.fkRun  ) ToggleRunMode();						
             if ((int)wParam == cheatcode[cheati]) {
 				cheati++;
-				if (cheati>6) {	cheati=0; SwitchMode("Debug mode",DEBUG); }
+				if (cheati>6) {	cheati=0; SwitchMode("Debug mode",DEBUGMODE); }
 			} else cheati=0;
 		}
 		
@@ -864,12 +864,12 @@ LONG APIENTRY MainWndProc( HWND hWnd, UINT message, UINT wParam, LONG lParam)
         case WM_KEYDOWN: {
          BOOL CTRL = (GetKeyState(VK_SHIFT) & 0x8000);
          switch( (int)wParam ) {
-          case 219: if (DEBUG) ChangeViewR(-2); break;
-          case 221: if (DEBUG) ChangeViewR(+2); break;
+          case 219: if (DEBUGMODE) ChangeViewR(-2); break;
+          case 221: if (DEBUGMODE) ChangeViewR(+2); break;
          
-		  case 'S': if (DEBUG && GameState && CTRL) SwitchMode("Slow mode",SLOW);
+		  case 'S': if (DEBUGMODE && GameState && CTRL) SwitchMode("Slow mode",SLOW);
                     break;          
-          case 'T': if (DEBUG && GameState && CTRL) SwitchMode("Timer",TIMER);   
+          case 'T': if (DEBUGMODE && GameState && CTRL) SwitchMode("Timer",TIMER);   
 			        break;
 
 		  /*
@@ -978,10 +978,10 @@ BOOL CreateMainWindow()
     wc.lpfnWndProc = (WNDPROC)MainWndProc; 
     wc.cbClsExtra = 0;                  
     wc.cbWndExtra = 0;                  
-    wc.hInstance = hInst;
-    wc.hIcon = wc.hIcon = LoadIcon(hInst,"ACTION");
+    wc.hInstance = reinterpret_cast<HINSTANCE>(hInst);
+    wc.hIcon = wc.hIcon = LoadIcon(reinterpret_cast<HINSTANCE>(hInst),"ACTION");
     wc.hCursor = NULL;
-	wc.hbrBackground = GetStockObject( BLACK_BRUSH );
+	wc.hbrBackground =  reinterpret_cast<HBRUSH>(GetStockObject( BLACK_BRUSH ));
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "HuntWindow";
     if (!RegisterClass(&wc)) return FALSE;
@@ -989,7 +989,7 @@ BOOL CreateMainWindow()
     hwndMain = CreateWindow(
         "HuntWindow","Carnivores",
   		WS_VISIBLE |  WS_POPUP,
-		0, 0, 0, 0, NULL,  NULL, hInst, NULL );
+		0, 0, 0, 0, NULL,  NULL, reinterpret_cast<HINSTANCE>(hInst), NULL );
 
 	if (hwndMain)
 	  PrintLog("Ok.\n");
@@ -1176,7 +1176,7 @@ void ProcessPlayerMovement()
 
    if (KeyFlags & kfCall) MakeCall();
        
-  if (DEBUG)   
+  if (DEBUGMODE)   
    if (KeyboardState [VK_CONTROL] & 128) 
     if (KeyFlags & kfBackward) VSpeed =-4; else VSpeed = 4;
 
@@ -1571,26 +1571,6 @@ SKIPYMOVE:
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void ProcessGame()
 {
     if (_GameState != GameState) {
@@ -1625,9 +1605,9 @@ void ProcessGame()
 	
 	if (!GameState) return;
     
-    if (DEBUG || ObservMode || TrophyMode) 
+    if (DEBUGMODE || ObservMode || TrophyMode) 
 		if (MyHealth) MyHealth = MAX_HEALTH;
-	if (DEBUG) ShotsLeft = WeapInfo[TargetWeapon].Shots;
+	if (DEBUGMODE) ShotsLeft = WeapInfo[TargetWeapon].Shots;
     DrawScene();   	
 	
 	if (!TrophyMode)
@@ -1642,7 +1622,7 @@ void ProcessGame()
 
 
 
-int PASCAL WinMain(HANDLE hInstance, HANDLE hPrevInstance,
+int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			       LPSTR lpszCmdLine, int nCmdShow)
 {
     MSG msg;	

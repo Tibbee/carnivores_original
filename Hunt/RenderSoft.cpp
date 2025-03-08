@@ -1,7 +1,6 @@
 #ifdef _soft
 
 #include "Hunt.h"
-#include "stdio.h"
 
 typedef struct _tmpoint {
     int x, y, tx, ty;
@@ -32,7 +31,7 @@ float k;
 int OpacityMode;
 
 
-void STTextOut(int x, int y, LPSTR t, int color)
+void STTextOut(int x, int y, LPCSTR t, int color)
 {
 	SetTextColor(hdcCMain, 0x00000000);
     TextOut(hdcCMain, x+1, y+1, t, strlen(t));
@@ -43,7 +42,7 @@ void STTextOut(int x, int y, LPSTR t, int color)
 void ShowControlElements()
 {
   
-  HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
+  HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
     
   char buf[128];  
   
@@ -499,8 +498,8 @@ void DrawTPlaneClip(BOOL SECONT)
    scrp[0].x     = cp[0].ev.scrx;
    scrp[0].y     = cp[0].ev.scry;
    scrp[0].Light = cp[0].ev.Light;
-   scrp[0].tx    = cp[0].tx;
-   scrp[0].ty    = cp[0].ty;
+   scrp[0].tx    = static_cast<int>(cp[0].tx);
+   scrp[0].ty    = static_cast<int>(cp[0].ty);
    scrp[0].z     = (int)cp[0].ev.v.z;
 
    for (u=0; u<vused-2; u++) {
@@ -508,8 +507,8 @@ void DrawTPlaneClip(BOOL SECONT)
 	 scrp[n].x     = cp[n+u].ev.scrx;
      scrp[n].y     = cp[n+u].ev.scry;
      scrp[n].Light = cp[n+u].ev.Light;
-     scrp[n].tx    = cp[n+u].tx;
-     scrp[n].ty    = cp[n+u].ty;
+     scrp[n].tx    = static_cast<int>(cp[n+u].tx);
+     scrp[n].ty    = static_cast<int>(cp[n+u].ty);
      scrp[n].z     = (int)cp[n+u].ev.v.z;
     }
      if (CORRECTION) DrawCorrectedTexturedFace();
@@ -900,9 +899,15 @@ void RenderModelClip(TModel* _mptr, float x0, float y0, float z0, int light, flo
 //  CMASK = 0xFF;
     
 
-    cp[0].ev.v = rVertex[fptr->v1];  cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay; 
-    cp[1].ev.v = rVertex[fptr->v2];  cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby; 
-    cp[2].ev.v = rVertex[fptr->v3];  cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy; 
+    cp[0].ev.v = rVertex[fptr->v1];  
+    cp[0].tx = static_cast<float>(fptr->tax);  
+    cp[0].ty = static_cast<float>(fptr->tay); 
+    cp[1].ev.v = rVertex[fptr->v2];  
+    cp[1].tx = static_cast<float>(fptr->tbx);  
+    cp[1].ty = static_cast<float>(fptr->tby); 
+    cp[2].ev.v = rVertex[fptr->v3];  
+    cp[2].tx = static_cast<float>(fptr->tcx);  
+    cp[2].ty = static_cast<float>(fptr->tcy); 
 
     if (CMASK == 0xFF) {
      for (u=0; u<vused; u++) cp[u].ev.v.z+=12.0f;
@@ -931,8 +936,8 @@ void RenderModelClip(TModel* _mptr, float x0, float y0, float z0, int light, flo
    
     mscrp[0].x     = cp[0].ev.scrx;
     mscrp[0].y     = cp[0].ev.scry;
-    mscrp[0].tx    = cp[0].tx;
-    mscrp[0].ty    = cp[0].ty;
+    mscrp[0].tx    = static_cast<int>(cp[0].tx);
+    mscrp[0].ty    = static_cast<int>(cp[0].ty);
 
     OpacityMode = (fptr->Flags & (sfOpacity + sfTransparent));
 
@@ -940,8 +945,8 @@ void RenderModelClip(TModel* _mptr, float x0, float y0, float z0, int light, flo
       for (int n=1; n<3; n++) {
 	   mscrp[n].x     = cp[n+u].ev.scrx;
        mscrp[n].y     = cp[n+u].ev.scry;     
-       mscrp[n].tx    = cp[n+u].tx;
-       mscrp[n].ty    = cp[n+u].ty;  }
+       mscrp[n].tx    = static_cast<int>(cp[n+u].tx);
+       mscrp[n].ty    = static_cast<int>(cp[n+u].ty);  }
 
        DrawModelFace();     
      }            
@@ -1033,9 +1038,15 @@ void RenderModelClipWater(TModel* _mptr, float x0, float y0, float z0, int light
 
     if (gScrp[fptr->v1].x & gScrp[fptr->v2].x & gScrp[fptr->v3].x)  goto LNEXT;    
               
-    cp[0].ev.v = rVertex[fptr->v1];  cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay; 
-    cp[1].ev.v = rVertex[fptr->v2];  cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby; 
-    cp[2].ev.v = rVertex[fptr->v3];  cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy; 
+    cp[0].ev.v = rVertex[fptr->v1];  
+    cp[0].tx = static_cast<float>(fptr->tax);  
+    cp[0].ty = static_cast<float>(fptr->tay); 
+    cp[1].ev.v = rVertex[fptr->v2];  
+    cp[1].tx = static_cast<float>(fptr->tbx);  
+    cp[1].ty = static_cast<float>(fptr->tby); 
+    cp[2].ev.v = rVertex[fptr->v3];
+    cp[2].tx = static_cast<float>(fptr->tcx);  
+    cp[2].ty = static_cast<float>(fptr->tcy); 
 
     if (!(gScrp[fptr->v1].x | gScrp[fptr->v2].x | gScrp[fptr->v3].x))  goto LNOCLIP;
 
@@ -1052,8 +1063,8 @@ LNOCLIP:
    
     mscrp[0].x     = cp[0].ev.scrx;
     mscrp[0].y     = cp[0].ev.scry;
-    mscrp[0].tx    = cp[0].tx;
-    mscrp[0].ty    = cp[0].ty;
+    mscrp[0].tx    = static_cast<int>(cp[0].tx);
+    mscrp[0].ty    = static_cast<int>(cp[0].ty);
 
     OpacityMode = (fptr->Flags & (sfOpacity + sfTransparent));
 
@@ -1061,8 +1072,8 @@ LNOCLIP:
       for (int n=1; n<3; n++) {
 	   mscrp[n].x     = cp[n+u].ev.scrx;
        mscrp[n].y     = cp[n+u].ev.scry;     
-       mscrp[n].tx    = cp[n+u].tx;
-       mscrp[n].ty    = cp[n+u].ty;  }
+       mscrp[n].tx    = static_cast<int>(cp[n+u].tx);
+       mscrp[n].ty    = static_cast<int>(cp[n+u].ty);  }
 
        DrawModelFace();     
      }            
@@ -1237,9 +1248,15 @@ void RenderNearModel(TModel* _mptr, float x0, float y0, float z0, int light, flo
     vused = 3;
     TFace *fptr = &mptr->gFace[f];    
         
-    cp[0].ev.v = rVertex[fptr->v1];  cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay; 
-    cp[1].ev.v = rVertex[fptr->v2];  cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby; 
-    cp[2].ev.v = rVertex[fptr->v3];  cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy; 
+    cp[0].ev.v = rVertex[fptr->v1];  
+    cp[0].tx = static_cast<float>(fptr->tax);  
+    cp[0].ty = static_cast<float>(fptr->tay); 
+    cp[1].ev.v = rVertex[fptr->v2];  
+    cp[1].tx = static_cast<float>(fptr->tbx);  
+    cp[1].ty = static_cast<float>(fptr->tby); 
+    cp[2].ev.v = rVertex[fptr->v3];
+    cp[2].tx = static_cast<float>(fptr->tcx);  
+    cp[2].ty = static_cast<float>(fptr->tcy); 
     
     for (u=0; u<vused; u++) cp[u].ev.v.z+=12.0f;
     for (u=0; u<vused; u++) ClipVector(ClipZ,u);
@@ -1261,8 +1278,8 @@ void RenderNearModel(TModel* _mptr, float x0, float y0, float z0, int light, flo
     scrp[0].x     = cp[0].ev.scrx;
     scrp[0].y     = cp[0].ev.scry;
     scrp[0].z     = (int)cp[0].ev.v.z;
-    scrp[0].tx    = cp[0].tx;
-    scrp[0].ty    = cp[0].ty;
+    scrp[0].tx    = static_cast<int>(cp[0].tx);
+    scrp[0].ty    = static_cast<int>(cp[0].ty);
     
 
     OpacityMode = (fptr->Flags & (sfOpacity + sfTransparent));
@@ -1273,8 +1290,8 @@ void RenderNearModel(TModel* _mptr, float x0, float y0, float z0, int light, flo
 	   scrp[n].x     = cp[n+u].ev.scrx;
        scrp[n].y     = cp[n+u].ev.scry;     
        scrp[n].z     = (int)cp[n+u].ev.v.z;      
-       scrp[n].tx    = cp[n+u].tx;
-       scrp[n].ty    = cp[n+u].ty;  }
+       scrp[n].tx    = static_cast<int>(cp[n+u].tx);
+       scrp[n].ty    = static_cast<int>(cp[n+u].ty);  }
 
        DrawCorrectedTexturedFace();
      }            
@@ -1598,8 +1615,8 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 
-	HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
-    HFONT oldfont = SelectObject(hdcCMain, fnt_Small);  
+	HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
+    HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcCMain, fnt_Small));  
 /*
 	int dtype = Characters[TrophyBody].CType;
 	int tc = Characters[TrophyBody].State;
@@ -1628,17 +1645,17 @@ void DrawTrophyText(int x0, int y0)
 	STTextOut(x, y0+16, "Weight: ", 0x00BFBFBF);  x+=GetTextW(hdcCMain,"Weight: ");
 	
 	if (OptSys)
-     sprintf(t,"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
+     sprintf_s(t, sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
 	else
-     sprintf(t,"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
+     sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
 
     STTextOut(x, y0+16, t, 0x0000BFBF);    x+=GetTextW(hdcCMain,t);
     STTextOut(x, y0+16, "Length: ", 0x00BFBFBF); x+=GetTextW(hdcCMain,"Length: ");
 
 	if (OptSys)
-	 sprintf(t,"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
+	 sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
 	else
-	 sprintf(t,"%3.2fm", DinoInfo[dtype].Length * scale);
+	 sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
      
 	STTextOut(x, y0+16, t, 0x0000BFBF); 
 	
@@ -1654,8 +1671,8 @@ void DrawTrophyText(int x0, int y0)
 	
 	x = x0;
 	STTextOut(x, y0+48, "Range of kill: ", 0x00BFBFBF);  x+=GetTextW(hdcCMain,"Range of kill: ");
-	if (OptSys) sprintf(t,"%3.1fft", range / 0.3);
-	else        sprintf(t,"%3.1fm", range);
+	if (OptSys) sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
+	else        sprintf_s(t,sizeof(t),"%3.1fm", range);
     STTextOut(x, y0+48, t, 0x0000BFBF);  
 
 	
@@ -1682,8 +1699,8 @@ void Render_LifeInfo(int li)
 {
 	int x,y;
 	
-	HBITMAP hbmpOld = SelectObject(hdcCMain, hbmpVideoBuf);
-    HFONT oldfont = SelectObject(hdcCMain, fnt_Small);  
+	HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(hdcCMain, hbmpVideoBuf));
+    HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcCMain, fnt_Small));  
 		
 	int   ctype = Characters[li].CType;
 	float  scale = Characters[li].scale;	
@@ -1694,8 +1711,8 @@ void Render_LifeInfo(int li)
 		
     STTextOut(x, y, DinoInfo[ctype].Name, 0x0000b000);    
 		
-	if (OptSys) sprintf(t,"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
-	else        sprintf(t,"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);         
+	if (OptSys) sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
+	else        sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);         
 	STTextOut(x, y+16, t, 0x0000b000);    
 
 	SelectObject(hdcMain, oldfont);
@@ -1837,7 +1854,7 @@ void RenderSkyPlane()
 void ShowVideo()
 {
   HDC _hdc =  hdcCMain;
-  HBITMAP hbmpOld = SelectObject(_hdc,hbmpVideoBuf);
+  HBITMAP hbmpOld = reinterpret_cast<HBITMAP>(SelectObject(_hdc,hbmpVideoBuf));
 
   if (UNDERWATER & CORRECTION)
    for (int y=0; y<WinH; y++) 

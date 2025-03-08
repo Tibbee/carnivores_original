@@ -1,5 +1,4 @@
 #include "Hunt.h"
-#include "stdio.h"
 HANDLE hfile;
 DWORD  l,HeapAllocated, HeapReleased;
 
@@ -41,7 +40,7 @@ BOOL _HeapFree(HANDLE hHeap,
 }
 
 
-void AddMessage(LPSTR mt)
+void AddMessage(LPCSTR mt)
 {
   MessageList.timeleft = timeGetTime() + 2 * 1000;
   lstrcpy(MessageList.mtext, mt);
@@ -466,14 +465,14 @@ void CorrectModel(TModel *mptr)
     }
 
 	int fp = 0;
-    for (f=0; f<mptr->FCount; f++) 
+    for (int f=0; f<mptr->FCount; f++) 
 		if ( (mptr->gFace[f].Flags & (sfOpacity | sfTransparent))==0)
 		{
 			tface[fp] = mptr->gFace[f];
             fp++;
 		}
 
-	for (f=0; f<mptr->FCount; f++) 
+	for (int f=0; f<mptr->FCount; f++) 
 		if ( (mptr->gFace[f].Flags & (sfOpacity | sfTransparent))!=0)
 		{
 			tface[fp] = mptr->gFace[f];
@@ -541,7 +540,7 @@ void LoadAnimation(TVTL &vtl)
 
 
 
-void LoadModelEx(TModel* &mptr, char* FName)
+void LoadModelEx(TModel* &mptr, LPCSTR FName)
 {    
     
     hfile = CreateFile(FName,
@@ -589,7 +588,7 @@ void LoadModelEx(TModel* &mptr, char* FName)
 
 
 
-void LoadWav(char* FName, TSFX &sfx)
+void LoadWav(LPCSTR FName, TSFX &sfx)
 {
   DWORD l;  
 
@@ -684,7 +683,7 @@ void LoadPicture(TPicture &pic, LPSTR pname)
 
 
 
-void LoadPictureTGA(TPicture &pic, LPSTR pname)
+void LoadPictureTGA(TPicture &pic, LPCSTR pname)
 {
     DWORD l;
 	WORD w,h;
@@ -720,20 +719,21 @@ void LoadPictureTGA(TPicture &pic, LPSTR pname)
 
 
 
-void LoadTextFile(TText &txt, char* FName)
+void LoadTextFile(TText &txt, LPCSTR FName)
 {
-	FILE *stream;
+    FILE *stream;
     txt.Lines = 0;
-	stream = fopen(FName, "r");
-    if (!stream) return;
-    while (fgets( txt.Text[txt.Lines], 128, stream) ) {
-        txt.Text[txt.Lines][ strlen(txt.Text[txt.Lines]) - 1 ] = 0;
-		txt.Lines++;
-	}
 
-	fclose( stream );
+    errno_t err = fopen_s(&stream, FName, "r");
+    if (err != 0 || !stream) return;  // Check if fopen_s failed
+
+    while (fgets(txt.Text[txt.Lines], 128, stream)) {
+        txt.Text[txt.Lines][strlen(txt.Text[txt.Lines]) - 1] = 0;  // Remove newline character
+        txt.Lines++;
+    }
+
+    fclose(stream);  // Don't forget to close the file after finishing
 }
-
 
 void CreateMipMapMT(WORD* dst, WORD* src, int H)
 {
@@ -1165,7 +1165,7 @@ void ReleaseCharacterInfo(TCharacterInfo &chinfo)
      chinfo.Animation[c].aniData = NULL;
 	}
 
-	for (c = 0; c<64; c++) {
+	for (int c = 0; c<64; c++) {
      if (!chinfo.SoundFX[c].lpData) break;
 	 _HeapFree(Heap, 0, chinfo.SoundFX[c].lpData);
      chinfo.SoundFX[c].lpData = NULL;
@@ -1178,7 +1178,7 @@ void ReleaseCharacterInfo(TCharacterInfo &chinfo)
 
 
 
-void LoadCharacterInfo(TCharacterInfo &chinfo, char* FName)
+void LoadCharacterInfo(TCharacterInfo &chinfo, LPCSTR FName)
 {
    ReleaseCharacterInfo(chinfo);
 
@@ -1287,7 +1287,7 @@ void ScrollWater()
         
         xpos/=2;
 
-        for (y=0; y<64; y++) {          
+        for (int y=0; y<64; y++) {          
           int ypos = (y*2-WaterShift*2) & 127;
           ypos/=2;
 
@@ -1301,7 +1301,7 @@ void ScrollWater()
 
         xpos/=2;
 
-        for (y=0; y<32; y++) {          
+        for (int y=0; y<32; y++) {          
           int ypos = (y*4-WaterShift*2) & 127;
           ypos/=4;
 
@@ -1499,7 +1499,7 @@ void CreateLog()
 }
 
 
-void PrintLog(LPSTR l)
+void PrintLog(LPCSTR l)
 {
 	DWORD w;
 	

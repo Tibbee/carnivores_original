@@ -1,0 +1,80 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "Debug",
+      "displayName": "Debug",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Build/Debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "${env:VCToolsInstallDir}\\bin\\Hostx86\\x86\\cl.exe",
+        "CMAKE_CXX_COMPILER": "${env:VCToolsInstallDir}\\bin\\Hostx86\\x86\\cl.exe",
+        "CMAKE_MAKE_PROGRAM": "ninja.exe"
+      }
+    },
+    {
+      "name": "ReleaseSoft",
+      "displayName": "Release (Soft)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Build/ReleaseSoft",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_SOFT": "ON"
+      }
+    },
+    {
+      "name": "ReleaseD3D",
+      "displayName": "Release (D3D)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Build/ReleaseD3D",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_D3D": "ON"
+      }
+    },
+    {
+      "name": "Release3DFX",
+      "displayName": "Release (3DFX)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Build/Release3DFX",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_3DFX": "ON"
+      }
+    },
+    {
+      "name": "DebugD3D",
+      "displayName": "Debug (D3D)",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/Build/DebugD3D", 
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_D3D": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Debug",
+      "configurePreset": "Debug"
+    },
+    {
+      "name": "ReleaseSoft",
+      "configurePreset": "ReleaseSoft"
+    },
+    {
+      "name": "ReleaseD3D",
+      "configurePreset": "ReleaseD3D"
+    },
+    {
+      "name": "DebugD3D",
+      "configurePreset": "DebugD3D"
+    },
+    {
+      "name": "Release3DFX",
+      "configurePreset": "Release3DFX"
+    }
+  ]
+}
+

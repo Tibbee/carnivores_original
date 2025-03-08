@@ -1,7 +1,6 @@
 #ifdef _d3d
 #include "Hunt.h"
 
-#include "stdio.h"
 
 #undef  TCMAX 
 #undef  TCMIN 
@@ -310,7 +309,7 @@ void d3dFlushBuffer(int fproc1, int fproc2)
     lpInstruction++;
     lpTriangle             = (LPD3DTRIANGLE)lpInstruction;   
       
-    for (i=0; i<fproc2; i++) {  	   
+    for (int i=0; i<fproc2; i++) {  	   
 	 lpTriangle->wV1    = ii++;
      lpTriangle->wV2    = ii++;	
      lpTriangle->wV3    = ii++;	
@@ -546,8 +545,8 @@ HRESULT WINAPI EnumDeviceCallback(
 
    fDeviceFound = TRUE;
    CopyMemory( &guidDevice, lpGUID, sizeof(GUID) );
-   strcpy( szDeviceDesc, lpszDeviceDesc );
-   strcpy( szDeviceName, lpszDeviceName );
+   strcpy_s( szDeviceDesc, sizeof(szDeviceDesc),lpszDeviceDesc );
+   strcpy_s( szDeviceName, sizeof(szDeviceDesc),lpszDeviceName );
    CopyMemory( &d3dHWDeviceDesc, lpd3dHWDeviceDesc, sizeof(D3DDEVICEDESC) );   
 
    return D3DENUMRET_CANCEL;
@@ -568,6 +567,7 @@ HRESULT CreateDirect3D( HWND hwnd )
 
    hRes = lpDD->SetDisplayMode( WinW, WinH, 16 );
    if (FAILED(hRes)) DoHalt("Error setting display mode\n");
+   
    wsprintf(logt, "Set Display mode %dx%d, 16bpp\n", WinW, WinH);
    PrintLog(logt);
    
@@ -673,8 +673,8 @@ HRESULT CreateScene(void)
     d3dViewport.dwSize   = sizeof(d3dViewport);
     d3dViewport.dwX      = 0UL;
     d3dViewport.dwY      = 0UL;
-    d3dViewport.dwWidth  = (DWORD)WinW;
-    d3dViewport.dwHeight = (DWORD)WinH;
+    d3dViewport.dwWidth  = GetSystemMetrics(SM_CXSCREEN); //(DWORD)WinW;
+    d3dViewport.dwHeight = GetSystemMetrics(SM_CYSCREEN); //(DWORD)WinH;
     d3dViewport.dvScaleX = D3DVAL((float)d3dViewport.dwWidth / 2.0);
     d3dViewport.dvScaleY = D3DVAL((float)d3dViewport.dwHeight / 2.0);
     d3dViewport.dvMaxX   = D3DVAL(1.0);
@@ -751,9 +751,87 @@ void Init3DHardware()
 
 
 
+/*void d3dDetectCaps()
+
+{
+    int t = 0;
+
+    // Try allocating textures
+    for (t = 0; t < d3dmemmapsize; t++) {
+        if (!d3dAllocTexture(t, 256, 256)) break;
+    }
+
+    d3dTexturesMem = t * 256 * 256 * 2;
+
+    // Log texture memory detection (in kilobytes)
+    sprintf_s(logt, sizeof(logt), "DETECTED: Texture memory: %dK.\n", d3dTexturesMem >> 10);
+    PrintLog(logt);
+
+    // Load the first texture to initialize texture memory
+    d3dDownLoadTexture(0, 256, 256, SkyPic);
+
+    // Get performance counter for high-resolution timing
+    LARGE_INTEGER start, end, frequency;
+    QueryPerformanceFrequency(&frequency);  // Get the frequency of the counter (ticks per second)
+    QueryPerformanceCounter(&start);        // Start the timer
+
+    // Load textures 10 times to measure texture transfer time
+    for (t = 0; t < 100; t++) {
+        d3dDownLoadTexture(0, 256, 256, SkyPic);
+    }
+
+    QueryPerformanceCounter(&end);  // End the timer
+
+    // Calculate the elapsed time in seconds
+    double elapsedTime = (double)(end.QuadPart - start.QuadPart) / (double)frequency.QuadPart;
+
+    // Prevent division by zero and display texture transfer speed
+    if (elapsedTime > 0) {
+        double transferSpeed = (128 * 10000) / elapsedTime; // Transfer speed in K/sec
+        // Use sprintf_s for safe string formatting
+        sprintf_s(logt, sizeof(logt), "DETECTED: Texture transfer speed: %.2f K/sec.\n", transferSpeed);
+        PrintLog(logt);
+    } else {
+        // Handle case where elapsedTime is too small (essentially zero)
+        PrintLog("DETECTED: Texture transfer speed: Invalid calculation\n");
+    }
+
+    // Reset texture map after testing
+    ResetTextureMap();
+
+    // Check pixel format
+    DDSURFACEDESC ddsd;
+    ZeroMemory(&ddsd, sizeof(DDSURFACEDESC));
+    ddsd.dwSize = sizeof(DDSURFACEDESC);
+    if (lpddBack->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) != DD_OK) return;
+    lpddBack->Unlock(ddsd.lpSurface);
+
+    // Determine pixel format
+    if (ddsd.ddpfPixelFormat.dwGBitMask == 0x3E0) {
+        VMFORMAT565 = FALSE;
+    } else {
+        VMFORMAT565 = TRUE;
+    }
+
+    if (VMFORMAT565) {
+        PrintLog("DETECTED: PixelFormat RGB565\n");
+    } else {
+        PrintLog("DETECTED: PixelFormat RGB555\n");
+        if (!STARTCONV555) {
+            STARTCONV555 = TRUE;
+            conv_pic555(PausePic);
+            conv_pic555(ExitPic);
+            conv_pic555(TrophyExit);
+        }
+        conv_pic555(MapPic);
+        conv_pic555(BulletPic);
+        conv_pic555(TrophyPic);
+    }
+}*/
+
 void d3dDetectCaps()
 {
-
+    int t = 0;
 	for (int t=0; t<d3dmemmapsize; t++) {
 		if (!d3dAllocTexture(t, 256, 256)) break;
 	}
@@ -771,8 +849,8 @@ void d3dDetectCaps()
 	PrintLog(logt);
 	ResetTextureMap();
 
-	wsprintf(logt, "DETECTED: Texture transfer speed: %dK/sec.\n", 128*10000 / T);
-	PrintLog(logt);
+	//wsprintf(logt, "DETECTED: Texture transfer speed: %dK/sec.\n", 128*10000 / T);
+	//PrintLog(logt);
 
 
 	DDSURFACEDESC ddsd;	 
@@ -799,13 +877,17 @@ void d3dDetectCaps()
     
 }
 
-
 void Activate3DHardware()
 {   	
     HRESULT hRes = CreateDirect3D(hwndMain);
     if (FAILED(hRes)) DoHalt("CreateDirect3D Failed.\n");
 
-	hRes = CreateDevice((DWORD)WinW, (DWORD)WinH);
+    WinW = GetSystemMetrics(SM_CXSCREEN);
+    WinH = GetSystemMetrics(SM_CYSCREEN);
+
+	hRes = CreateDevice(WinW, WinH);
+
+	//hRes = CreateDevice((DWORD)WinW, (DWORD)WinH);
     if (FAILED(hRes))  DoHalt("Create Device Failed.\n");
 
 	d3dClearBuffers();
@@ -1284,13 +1366,13 @@ void DrawPicture(int x, int y, TPicture &pic)
 
 
 
-void ddTextOut(int x, int y, LPSTR t, int color)
+void ddTextOut(int x, int y, LPCSTR t, int color)
 {
   lpddBack->GetDC( &ddBackDC );
   SetBkMode( ddBackDC, TRANSPARENT );
 
   HFONT oldfont;
-  if (SmallFont) oldfont = SelectObject(ddBackDC, fnt_Small);
+  if (SmallFont) oldfont = reinterpret_cast<HFONT>(SelectObject(ddBackDC, fnt_Small));
     
   SetTextColor(ddBackDC, 0x00101010);
   TextOut(ddBackDC, x+2, y+1, t, strlen(t));
@@ -1308,7 +1390,7 @@ void DrawTrophyText(int x0, int y0)
 {
 	int x;
 	SmallFont = TRUE;
-    HFONT oldfont = SelectObject(hdcMain, fnt_Small);  
+    HFONT oldfont = reinterpret_cast<HFONT>(SelectObject(hdcMain, fnt_Small));  
 	int tc = TrophyBody;
 	
 	int   dtype = TrophyRoom.Body[tc].ctype;
@@ -1328,17 +1410,17 @@ void DrawTrophyText(int x0, int y0)
 	x = x0;
 	ddTextOut(x, y0+16, "Weight: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weight: ");
 	if (OptSys)
-     sprintf(t,"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
+     sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
 	else
-     sprintf(t,"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);     
+     sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);     
 
     ddTextOut(x, y0+16, t, 0x0000BFBF);    x+=GetTextW(hdcMain,t);
     ddTextOut(x, y0+16, "Length: ", 0x00BFBFBF); x+=GetTextW(hdcMain,"Length: ");
      
 	if (OptSys)
-	 sprintf(t,"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
+	 sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
 	else
-	 sprintf(t,"%3.2fm", DinoInfo[dtype].Length * scale);
+	 sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
 
 	ddTextOut(x, y0+16, t, 0x0000BFBF); 
 	
@@ -1353,8 +1435,8 @@ void DrawTrophyText(int x0, int y0)
 
 	x = x0;
 	ddTextOut(x, y0+48, "Range of kill: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Range of kill: ");
-	if (OptSys) sprintf(t,"%3.1fft", range / 0.3);
-	else        sprintf(t,"%3.1fm", range);
+	if (OptSys) sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
+	else        sprintf_s(t,sizeof(t),"%3.1fm", range);
     ddTextOut(x, y0+48, t, 0x0000BFBF);  
 
 
@@ -1394,8 +1476,8 @@ void Render_LifeInfo(int li)
 		
     ddTextOut(x, y, DinoInfo[ctype].Name, 0x0000b000);    
 		
-	if (OptSys) sprintf(t,"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
-	else        sprintf(t,"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
+	if (OptSys) sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
+	else        sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
     
 	ddTextOut(x, y+16, t, 0x0000b000);
     
@@ -2521,9 +2603,21 @@ void RenderModelClip(TModel* _mptr, float x0, float y0, float z0, int light, flo
     CMASK|=gScrp[fptr->v3].y;         
 
 	
-    cp[0].ev.v = rVertex[fptr->v1]; cp[0].tx = fptr->tax;  cp[0].ty = fptr->tay; cp[0].ev.Fog = vFogT[fptr->v1]; cp[0].ev.Light = mptr->VLight[fptr->v1];
-    cp[1].ev.v = rVertex[fptr->v2]; cp[1].tx = fptr->tbx;  cp[1].ty = fptr->tby; cp[1].ev.Fog = vFogT[fptr->v2]; cp[1].ev.Light = mptr->VLight[fptr->v2];
-    cp[2].ev.v = rVertex[fptr->v3]; cp[2].tx = fptr->tcx;  cp[2].ty = fptr->tcy; cp[2].ev.Fog = vFogT[fptr->v3]; cp[2].ev.Light = mptr->VLight[fptr->v3]; 
+    cp[0].ev.v = rVertex[fptr->v1]; 
+    cp[0].tx = fptr->tax;  
+    cp[0].ty = fptr->tay; 
+    cp[0].ev.Fog = static_cast<float>(vFogT[fptr->v1]); 
+    cp[0].ev.Light = mptr->VLight[fptr->v1];
+    cp[1].ev.v = rVertex[fptr->v2]; 
+    cp[1].tx = fptr->tbx;  
+    cp[1].ty = fptr->tby; 
+    cp[1].ev.Fog = static_cast<float>(vFogT[fptr->v2]); 
+    cp[1].ev.Light = mptr->VLight[fptr->v2];
+    cp[2].ev.v = rVertex[fptr->v3]; 
+    cp[2].tx = fptr->tcx;  
+    cp[2].ty = fptr->tcy; 
+    cp[2].ev.Fog = static_cast<float>(vFogT[fptr->v3]); 
+    cp[2].ev.Light = mptr->VLight[fptr->v3]; 
    
 	{
      for (u=0; u<vused; u++) cp[u].ev.v.z+=16.0f;
@@ -2937,7 +3031,7 @@ void Render3DHardwarePosts()
    }   
 
    TExplosion *eptr;
-   for (c=0; c<ExpCount; c++) {
+   for (int c=0; c<ExpCount; c++) {
       
       eptr = &Explosions[c];
       eptr->rpos.x = eptr->pos.x - CameraX;
@@ -3190,9 +3284,9 @@ void RenderSkyPlane()
    float zb = CameraW * CameraH * p / (qy * (VideoCY-scry/2.f) + qz);
    float zc = CameraW * CameraH * p / (qy * (VideoCY-scry) + qz);
 
-   float _za = fabs(za) - 50200; if (_za<0) _za=0;
-   float _zb = fabs(zb) - 50200; if (_zb<0) _zb=0;
-   float _zc = fabs(zc) - 50200; if (_zc<0) _zc=0;
+   float _za = static_cast<float>(fabs(za)) - 50200; if (_za<0) _za=0;
+   float _zb = static_cast<float>(fabs(zb)) - 50200; if (_zb<0) _zb=0;
+   float _zc = static_cast<float>(fabs(zc)) - 50200; if (_zc<0) _zc=0;
    
    int alpha = (int)(255*40240 / (40240+_za));
    int alphb = (int)(255*40240 / (40240+_zb));
@@ -3291,7 +3385,7 @@ void RenderSkyPlane()
 
 
 
-	sky=scry; 
+	sky=static_cast<float>(scry); 
 	sy = VideoCY - sky;
 	qyy = qy * sy;
 	q = qx1 + qyy;
@@ -3550,7 +3644,7 @@ void RenderHealthBar()
     lpVertex++;
   }
 
-  for (y=1; y<3; y++) {	  
+  for (int y=1; y<3; y++) {	  
 	lpVertex->sx       = (float)x0;
     lpVertex->sy       = (float)y0+y;
     lpVertex->sz       = 0.99999f;
@@ -3606,7 +3700,7 @@ void RenderHealthBar()
    lpInstruction++;
    lpLine                 = (LPD3DLINE)lpInstruction;   
 
-   for (y=0; y<6; y++) {
+   for (int y=0; y<6; y++) {
     lpLine->wV1    = y*2;
     lpLine->wV2    = y*2+1;   
     lpLine++;

@@ -1,3 +1,6 @@
+//#pragma warning(push)
+//#pragma warning(disable: 4731)
+
 void HLineTDGlass50( void )
 {
 
@@ -4344,3 +4347,4 @@ L303:
 
 L400: ;
 }
+//#pragma warning(pop)
