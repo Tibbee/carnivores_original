@@ -7,8 +7,12 @@ void SetupRes()
 	if (OptRes==2) { WinW = 512; WinH=384; }
 	if (OptRes==3) { WinW = 640; WinH=480; }
 	if (OptRes==4) { WinW = 800; WinH=600; }
-	//if (OptRes==5) { WinW =2560; WinH=1440; }
-	if (OptRes==5) { WinW =1024; WinH=768; }		
+	if (OptRes==5) { WinW =1024; WinH=768; }
+	if (OptRes==6) { WinW =1280; WinH=1024; }
+	if (OptRes==7) { WinW =1600; WinH=1200; }
+	if (OptRes==8) { WinW =1920; WinH=1080; }
+	if (OptRes==9) { WinW =2560; WinH=1440; }
+	//if (OptRes==5) { WinW =1024; WinH=768; }		
 
 }
 
@@ -188,7 +192,8 @@ void ProcessCommandLine()
      if (strstr(s,"/vmode2")) SetVideoMode(400, 300);
      if (strstr(s,"/vmode3")) SetVideoMode(512, 384);
      if (strstr(s,"/vmode4")) SetVideoMode(640, 480);
-     if (strstr(s,"/vmode5")) SetVideoMode(800, 600);     
+     if (strstr(s,"/vmode5")) SetVideoMode(800, 600);
+	 if (strstr(s,"/vmode6")) SetVideoMode(1920, 1080);      
      if (strstr(s,"prj=")) { strcpy_s(ProjectName, sizeof(ProjectName), s+4); GameState = 1; }
   } 
 }

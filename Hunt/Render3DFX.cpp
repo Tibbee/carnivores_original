@@ -92,10 +92,11 @@ void Init3DHardware()
 void Activate3DHardware()
 {   
 //  Init3DHardware();
+  SetVideoMode(WinW,WinH);
   if (WinW<512) 
 	  SetVideoMode(512,384);  
-
-  SetVideoMode(WinW,WinH);
+  else if (WinW>1600)
+    SetVideoMode(1600,1200);
   
   int fxmode = GR_RESOLUTION_640x480;
   switch (WinW) {
@@ -105,6 +106,10 @@ void Activate3DHardware()
    case  640: fxmode = GR_RESOLUTION_640x480;  break;
    case  800: fxmode = GR_RESOLUTION_800x600;  break;
    case 1024: fxmode = GR_RESOLUTION_1024x768; break;
+   case 1280: fxmode = GR_RESOLUTION_1280x1024; break;
+   case 1600: fxmode = GR_RESOLUTION_1600x1200; break;
+   case 1920: fxmode = GR_RESOLUTION_1600x1200; break;
+   case 2560: fxmode = GR_RESOLUTION_1600x1200; break;
   }
   
   

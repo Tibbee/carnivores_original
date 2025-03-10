@@ -11,7 +11,7 @@ typedef struct _TMenuSet {
 TMenuSet Options[3];
 char HMLtxt[3][12];
 char CKtxt[2][16];
-char Restxt[8][24];
+char Restxt[10][24];
 char Textxt[3][12];
 char Ontxt[2][12];
 char Systxt[2][12];
@@ -209,9 +209,12 @@ void SetVideoMode(int W, int H)
    WinEY = WinH - 1;
    VideoCX = WinW / 2;
    VideoCY = WinH / 2;
-    
+   AspectRatio = (float)WinW/(float)WinH;            
+   #ifdef _3dfx
+   AspectRatio = (float)GetSystemMetrics(SM_CXSCREEN)/(float)GetSystemMetrics(SM_CYSCREEN);
+   #endif
    CameraW = (float)VideoCX*1.25f;
-   CameraH = CameraW;
+   CameraH = CameraW * (WinH*AspectRatio / WinW);
 
    if (HARD3D) FULLSCREEN=TRUE;
 
@@ -872,8 +875,12 @@ void SelectMenu0(int s)
 	  if (WinW==512) OptRes=2;
 	  if (WinW==640) OptRes=3;
 	  if (WinW==800) OptRes=4;
-	  //if (WinW==2560) OptRes=5;
 	  if (WinW==1024) OptRes=5;
+	  if (WinW==1280) OptRes=6;
+	  if (WinW==1600) OptRes=7;
+	  if (WinW==1920) OptRes=8;
+	  if (WinW==2560) OptRes=9;
+	  //if (WinW==1024) OptRes=5;
 
 	  MenuState=3;
 	  LoadMenuTGA();
@@ -1040,7 +1047,7 @@ void SelectOptions()
 
 	case 2:
 		switch (OptLine) {
-		case 0: OptRes++; if (OptRes>5) OptRes=0; break;
+		case 0: OptRes++; if (OptRes>9) OptRes=0; break;
 		case 1: FOGENABLE=!FOGENABLE; break;
         case 2: OptText++; if (OptText>2) OptText=0; break;
 		case 3: SHADOWS3D=!SHADOWS3D; break;
@@ -1276,8 +1283,12 @@ void ProcessOptionsMenu()
 		if (OptRes==2) { WinW = 512; WinH=384; }
 		if (OptRes==3) { WinW = 640; WinH=480; }
 		if (OptRes==4) { WinW = 800; WinH=600; }
-		//if (OptRes==5) { WinW =2560; WinH=1440; }		
-		if (OptRes==5) { WinW =1024; WinH=768; }		
+		if (OptRes==5) { WinW =1024; WinH=768; }
+		if (OptRes==6) { WinW =1280; WinH=1024; }
+		if (OptRes==7) { WinW =1600; WinH=1200; }
+		if (OptRes==8) { WinW =1920; WinH=1080; }
+		if (OptRes==9) { WinW =2560; WinH=1440; }		
+		//if (OptRes==5) { WinW =1024; WinH=768; }		
 		
 		SaveTrophy();
 		CopyMenuToVideo(0); ShowMenuVideo();  Wait(50);
@@ -1464,9 +1475,13 @@ void InitMenu()
 	wsprintf(Restxt[2],"512x384");
 	wsprintf(Restxt[3],"640x480");
 	wsprintf(Restxt[4],"800x600");
-	//wsprintf(Restxt[5],"1024x768");
 	wsprintf(Restxt[5],"1024x768");
 	wsprintf(Restxt[6],"1280x1024");
+	wsprintf(Restxt[7],"1600x1200");
+	wsprintf(Restxt[8],"1920x1080");
+	wsprintf(Restxt[9],"2560x1440");
+
+
 
     wsprintf(Textxt[0],"Low");
 	wsprintf(Textxt[1],"High");

@@ -981,7 +981,7 @@ BOOL CreateMainWindow()
     wc.hInstance = reinterpret_cast<HINSTANCE>(hInst);
     wc.hIcon = wc.hIcon = LoadIcon(reinterpret_cast<HINSTANCE>(hInst),"ACTION");
     wc.hCursor = NULL;
-	wc.hbrBackground =  reinterpret_cast<HBRUSH>(GetStockObject( BLACK_BRUSH ));
+	  wc.hbrBackground =  reinterpret_cast<HBRUSH>(GetStockObject( BLACK_BRUSH ));
     wc.lpszMenuName = NULL;
     wc.lpszClassName = "HuntWindow";
     if (!RegisterClass(&wc)) return FALSE;
@@ -1481,6 +1481,11 @@ SKIPYMOVE:
   if (!UNDERWATER) UnderWaterT = 0;
               else if (UnderWaterT<512) UnderWaterT += TimeDt; else UnderWaterT = 512;
 
+  AspectRatio = (float)WinW/(float)WinH;            
+  #ifdef _3dfx
+  AspectRatio = (float)GetSystemMetrics(SM_CXSCREEN)/(float)GetSystemMetrics(SM_CYSCREEN);
+  #endif
+  
   if (UNDERWATER) {
     CameraW = (float)VideoCX*(1.25f + (1.f+(float)cos(RealTime/180.f)) / 30  + (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 1.5f  );
     CameraH = (float)VideoCX*(1.25f + (1.f+(float)sin(RealTime/180.f)) / 30  - (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 16.f  );
@@ -1491,7 +1496,7 @@ SKIPYMOVE:
 	FogsList[127].YBegin = (GetLandUpH(CameraX, CameraZ) / ctHScale) + 8;
   } else {
    CameraW = (float)VideoCX*1.25f;
-   CameraH = CameraW;   
+   CameraH = CameraW * (WinH*AspectRatio/WinW);   
   }
 
   
