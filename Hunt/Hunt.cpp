@@ -1,6 +1,10 @@
 #define _MAIN_
 #include "Hunt.h"
 
+#ifdef _d3d
+HMODULE hDDraw = LoadLibraryA("DDRAW\\ddraw.dll");
+#endif
+
 float rav=0;
 float rbv=0;
 BOOL NeedRVM;
@@ -9,7 +13,7 @@ float BinocularPower  = 2.5;
 void ShowMenuVideo();
 void HideWeapon();
 
-char cheatcode[16] = "DEBUGON";
+char cheatcode[16] = "DEBUGUP";
 int  cheati = 0;
 
 typedef struct _ModelListItem {
@@ -43,7 +47,13 @@ TCharListLine ChRenderList[64];
 void ResetMousePos()
 {	
  if (FULLSCREEN)
-   SetCursorPos(VideoCX, VideoCY);    
+   SetCursorPos(VideoCX, VideoCY);
+ else 
+    {
+      POINT p{ 0,0 };
+      ClientToScreen(hwndMain, &p);
+      SetCursorPos(p.x + VideoCX, p.y + VideoCY);
+    }
 }
 
 void InsertModelList(TModel* mptr, float x0, float y0, float z0, int light, float al, float bt)
@@ -727,8 +737,8 @@ void SwitchMode(LPCSTR lps, BOOL& b)
 {
   b = !b;
   char buf[200];
-  if (b) wsprintf(buf,"%s is ON", lps);
-    else wsprintf(buf,"%s is OFF", lps);
+  if (b) ::sprintf_s(buf, sizeof(buf), "%s is ON", lps);
+    else ::sprintf_s(buf, sizeof(buf), "%s is OFF", lps);
   MessageBeep(0xFFFFFFFF);
   AddMessage(buf);
 }
@@ -740,7 +750,7 @@ void ChangeViewR(int d)
   ctViewR+=d;
   if (ctViewR<10) ctViewR = 10;
   if (ctViewR>60) ctViewR = 60;
-  wsprintf(buf,"ViewR = %d", ctViewR);
+  ::sprintf_s(buf, sizeof(buf), "ViewR = %d", ctViewR);
   MessageBeep(0xFFFFFFFF);
   AddMessage(buf);
 }
@@ -1479,34 +1489,32 @@ SKIPYMOVE:
 	  if (Weapon.state) HideWeapon();
 
   if (!UNDERWATER) UnderWaterT = 0;
-              else if (UnderWaterT<512) UnderWaterT += TimeDt; else UnderWaterT = 512;
-
-  AspectRatio = (float)WinW/(float)WinH;            
-  #ifdef _3dfx
-  AspectRatio = (float)GetSystemMetrics(SM_CXSCREEN)/(float)GetSystemMetrics(SM_CYSCREEN);
-  #endif
+              else if (UnderWaterT<512) UnderWaterT += TimeDt; else UnderWaterT = 512;     
   
   if (UNDERWATER) {
-    CameraW = (float)VideoCX*(1.25f + (1.f+(float)cos(RealTime/180.f)) / 30  + (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 1.5f  );
-    CameraH = (float)VideoCX*(1.25f + (1.f+(float)sin(RealTime/180.f)) / 30  - (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 16.f  );
+    CameraW = (float)VideoCX*(0.98f + (1.f+(float)cos(RealTime/180.f)) / 30  + (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 1.5f  );
+    CameraH = (float)VideoCX*(0.98f + (1.f+(float)sin(RealTime/180.f)) / 30  - (1.f - (float)sin(UnderWaterT/512.f*pi/2)) / 16.f  );
     
     CameraAlpha+=(float)cos(RealTime/360.f) / 120;
     CameraBeta +=(float)sin(RealTime/360.f) / 100;    
     CameraY-=(float)sin(RealTime/360.f) * 4;    
 	FogsList[127].YBegin = (GetLandUpH(CameraX, CameraZ) / ctHScale) + 8;
   } else {
-   CameraW = (float)VideoCX*1.25f;
-   CameraH = CameraW * (WinH*AspectRatio/WinW);   
+   CameraW = (float)VideoCX * 0.98f;
+   CameraH = CameraW;
+   #ifdef _3dfx
+   CameraH = CameraW * (float)WinW/(float)WinH;
+   #endif   
   }
 
   
-  ctViewR = 36;
+  ctViewR = 60;
   if (BINMODE) {
-   ctViewR = 40;
+   ctViewR = 60;
    CameraW*=BinocularPower;
    CameraH*=BinocularPower;
   } else if (OPTICMODE) {
-   ctViewR = 40;
+   ctViewR = 60;
    CameraW*=3.0f;
    CameraH*=3.0f;
   }
@@ -1627,7 +1635,7 @@ void ProcessGame()
 
 
 
-int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 			       LPSTR lpszCmdLine, int nCmdShow)
 {
     MSG msg;	

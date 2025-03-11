@@ -82,8 +82,8 @@ void Init3DHardware()
 
   FXConstTstartAddress = grTexMinAddress(GR_TMU0);   
   FXConstTendAddress   = grTexMaxAddress(GR_TMU0);
-  wsprintf(logt, "Start Address: %d\n", FXConstTstartAddress);  PrintLog(logt);
-  wsprintf(logt, "End   Address: %d\n", FXConstTendAddress);   PrintLog(logt);
+  ::sprintf_s(logt, sizeof(logt), "Start Address: %d\n", FXConstTstartAddress);  PrintLog(logt);
+  ::sprintf_s(logt, sizeof(logt), "End   Address: %d\n", FXConstTendAddress);   PrintLog(logt);
   //if (FXConstTendAddress  > 2097144) FXConstTendAddress = 2097144;
   
 }
@@ -443,7 +443,7 @@ float GetSkyK(int x, int y)
   grLfbUnlock(GR_LFB_READ_ONLY, GR_BUFFER_BACKBUFFER);
 
 //  char t[128];
-//  wsprintf(t, "%d  %d  %d", SkySumR, SkySumG, SkySumB);
+//  ::sprintf_s(t, "%d  %d  %d", SkySumR, SkySumG, SkySumB);
 //  AddMessage(t);
 
   
@@ -496,7 +496,7 @@ void ShowVideo()
       if (LOWRESTX && (Takt & 63)==0) TryHiResTx();
 /*
    char t[128];
-   wsprintf(t, "FX mem loaded: %dK", FxMemLoaded >> 10);
+   ::sprintf_s(t, "FX mem loaded: %dK", FxMemLoaded >> 10);
    if (FxMemLoaded) AddMessage(t); */
    FxMemLoaded = 0;
    
@@ -720,47 +720,47 @@ void DrawTrophyText(int x0, int y0)
 	x = x0;
 	FXTextOut(x, y0+16, "Weight: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weight: ");
 	if (OptSys)
-     sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
+     ::sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
 	else
-     sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
+     ::sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);
      
 
     FXTextOut(x, y0+16, t, 0x0000BFBF);    x+=GetTextW(hdcMain,t);
     FXTextOut(x, y0+16, "Length: ", 0x00BFBFBF); x+=GetTextW(hdcMain,"Length: ");
      
 	if (OptSys)
-	 sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
+	 ::sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
 	else
-	 sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
+	 ::sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
 
 	FXTextOut(x, y0+16, t, 0x0000BFBF); 
 	
 	x = x0;
 	FXTextOut(x, y0+32, "Weapon: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weapon: ");
-	 wsprintf(t,"%s    ", WeapInfo[wep].Name);
+	 ::sprintf_s(t,sizeof(t),"%s    ", WeapInfo[wep].Name);
     FXTextOut(x, y0+32, t, 0x0000BFBF);   x+=GetTextW(hdcMain,t);
     FXTextOut(x, y0+32, "Score: ", 0x00BFBFBF);   x+=GetTextW(hdcMain,"Score: ");
-	 wsprintf(t,"%d", score);
+	 ::sprintf_s(t,sizeof(t),"%d", score);
 	FXTextOut(x, y0+32, t, 0x0000BFBF); 
 
 
 	x = x0;
 	FXTextOut(x, y0+48, "Range of kill: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Range of kill: ");
-	if (OptSys) sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
-	else        sprintf_s(t,sizeof(t),"%3.1fm", range);
+	if (OptSys) ::sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
+	else        ::sprintf_s(t,sizeof(t),"%3.1fm", range);
     FXTextOut(x, y0+48, t, 0x0000BFBF);  
 
 
 	x = x0;
 	FXTextOut(x, y0+64, "Date: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Date: ");
 	if (OptSys)
-	 wsprintf(t,"%d.%d.%d   ", ((date>>10) & 255), (date & 255), date>>20);
+	 ::sprintf_s(t, sizeof(t), "%d.%d.%d   ", ((date>>10) & 255), (date & 255), date>>20);
 	else
-     wsprintf(t,"%d.%d.%d   ", (date & 255), ((date>>10) & 255), date>>20);
+     ::sprintf_s(t, sizeof(t), "%d.%d.%d   ", (date & 255), ((date>>10) & 255), date>>20);
 
     FXTextOut(x, y0+64, t, 0x0000BFBF);   x+=GetTextW(hdcMain,t);
     FXTextOut(x, y0+64, "Time: ", 0x00BFBFBF);   x+=GetTextW(hdcMain,"Time: ");
-	 wsprintf(t,"%d:%02d", ((time>>10) & 255), (time & 255));
+	 ::sprintf_s(t, sizeof(t), "%d:%02d", ((time>>10) & 255), (time & 255));
 	FXTextOut(x, y0+64, t, 0x0000BFBF); 
 
 	SmallFont = FALSE;
@@ -786,8 +786,8 @@ void Render_LifeInfo(int li)
 		
     FXTextOut(x, y, DinoInfo[ctype].Name, 0x0000b000);    
 		
-	if (OptSys) sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
-	else        sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
+	if (OptSys) ::sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
+	else        ::sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
     
 	FXTextOut(x, y+16, t, 0x0000b000);
     
@@ -840,10 +840,10 @@ void ShowControlElements()
   char buf[128];
   
   if (TIMER) {
-   wsprintf(buf,"msc: %d", TimeDt);
+   ::sprintf_s(buf, sizeof(buf), "msc: %d", TimeDt);
    FXTextOut(WinEX-81, 11, buf, 0x0020A0A0);
 
-   wsprintf(buf,"polys: %d", dFacesCount);   
+   ::sprintf_s(buf, sizeof(buf), "polys: %d", dFacesCount);   
    FXTextOut(WinEX-90, 24, buf, 0x0020A0A0);
   }
 
@@ -854,9 +854,9 @@ void ShowControlElements()
 
   if (ExitTime) {	  
 	  int y = WinH / 3;
-	  wsprintf(buf,"Preparing for evacuation...");
+	  ::sprintf_s(buf, sizeof(buf), "Preparing for evacuation...");
       FXTextOut(VideoCX - GetTextW(hdcCMain, buf)/2, y, buf, 0x0060C0D0);
-	  wsprintf(buf,"%d seconds left.", 1 + ExitTime / 1000);
+	  ::sprintf_s(buf, sizeof(buf), "%d seconds left.", 1 + ExitTime / 1000);
 	  FXTextOut(VideoCX - GetTextW(hdcCMain, buf)/2, y + 18, buf, 0x0060C0D0);
   }
    

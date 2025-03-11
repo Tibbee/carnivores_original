@@ -32,7 +32,7 @@ int  MapVKKey(int k)
 
 void AddMenuItem(TMenuSet &ms, LPCSTR txt)
 {
-	wsprintf(ms.Item[ms.Count++], "%s", txt);
+	::sprintf_s(ms.Item[ms.Count++], "%s", txt);
 }
 
 
@@ -95,7 +95,7 @@ void InitDirectDraw()
 
    hres = DirectDrawCreate( NULL, &lpDD, NULL );
    if( hres != DD_OK ) {      
-	  wsprintf(logt, "DirectDrawCreate Error: %Xh\n", hres);
+	  ::sprintf_s(logt, sizeof(logt), "DirectDrawCreate Error: %Xh\n", hres);
       PrintLog(logt);
 	  DoHalt("");	  
    }
@@ -106,7 +106,7 @@ void InitDirectDraw()
 /*
    hres = lpDD->QueryInterface( IID_IDirectDraw2, (LPVOID *)&lpDD2);
    if( hres != DD_OK ) {
-	  wsprintf(logt, "QueryInterface Error: %Xh\n", hres);
+	  ::sprintf_s(logt, "QueryInterface Error: %Xh\n", hres);
       PrintLog(logt);
 	  DoHalt("");
    }
@@ -124,7 +124,7 @@ void InitDirectDraw()
    
    hres = lpDD->SetCooperativeLevel( hwndMain, cl);
    if( hres != DD_OK )  {
-	  wsprintf(logt, "SetCooperativeLevel Error: %Xh\n", hres);
+	  ::sprintf_s(logt, sizeof(logt), "SetCooperativeLevel Error: %Xh\n", hres);
       PrintLog(logt);
 	  DoHalt("");
    }
@@ -158,7 +158,7 @@ void SetFullScreen()
                else res = lpDD->RestoreDisplayMode();
  
    if (res != DD_OK) {
-	 wsprintf(logt, "DDRAW: Error set video mode %dx%d\n", WinW, WinH);
+	 ::sprintf_s(logt, sizeof(logt), "DDRAW: Error set video mode %dx%d\n", WinW, WinH);
      PrintLog(logt);
    }
 
@@ -208,13 +208,12 @@ void SetVideoMode(int W, int H)
    WinEX = WinW - 1;
    WinEY = WinH - 1;
    VideoCX = WinW / 2;
-   VideoCY = WinH / 2;
-   AspectRatio = (float)WinW/(float)WinH;            
+   VideoCY = WinH / 2;           
+   CameraW = (float)VideoCX * 0.98f;
+   CameraH = CameraW;
    #ifdef _3dfx
-   AspectRatio = (float)GetSystemMetrics(SM_CXSCREEN)/(float)GetSystemMetrics(SM_CYSCREEN);
+   CameraH = CameraW * (float)WinW/(float)WinH;
    #endif
-   CameraW = (float)VideoCX*1.25f;
-   CameraH = CameraW * (WinH*AspectRatio / WinW);
 
    if (HARD3D) FULLSCREEN=TRUE;
 
@@ -224,7 +223,7 @@ void SetVideoMode(int W, int H)
        res = lpDD->SetDisplayMode( WinW, WinH, 16);        
 	
 	if (res != DD_OK) {
-	 wsprintf(logt, "DDRAW: Error set video mode %dx%d\n", WinW, WinH);
+	 ::sprintf_s(logt, sizeof(logt), "DDRAW: Error set video mode %dx%d\n", WinW, WinH);
      PrintLog(logt);
     }
    }
@@ -237,7 +236,7 @@ void SetVideoMode(int W, int H)
    }
 
    //char buf[40];
-   //wsprintf(buf,"Video mode: %dx%d", WinW, WinH);
+   //::sprintf_s(buf,"Video mode: %dx%d", WinW, WinH);
    //AddMessage(buf);
    LoDetailSky =(W>400);
    SetCursor(hcArrow);
@@ -344,9 +343,9 @@ void ReloadWeaponInfo()
 void ReloadAreaInfo()
 {
 	char aname[64], tname[64];
-	if (TargetArea > AreaMax)  wsprintf(aname, "HUNTDAT\\MENU\\LANDPIC\\area%d_no.bmp", TargetArea+1);
-	else                       wsprintf(aname, "HUNTDAT\\MENU\\LANDPIC\\area%d.bmp", TargetArea+1);
-    wsprintf(tname, "HUNTDAT\\MENU\\LANDPIC\\area%d.txt", TargetArea+1);
+	if (TargetArea > AreaMax)  ::sprintf_s(aname, sizeof(aname), "HUNTDAT\\MENU\\LANDPIC\\area%d_no.bmp", TargetArea+1);
+	else                       ::sprintf_s(aname, sizeof(aname), "HUNTDAT\\MENU\\LANDPIC\\area%d.bmp", TargetArea+1);
+    ::sprintf_s(tname, sizeof(tname), "HUNTDAT\\MENU\\LANDPIC\\area%d.txt", TargetArea+1);
 	LoadPicture(LandPic,  aname);
 	LoadTextFile(LandText, tname);
 }
@@ -614,7 +613,7 @@ void DrawMainStats()
 
    PrintText(TrophyRoom.PlayerName, 90, 9, c);
 
-   wsprintf(t,"%d", TrophyRoom.Score);
+   ::sprintf_s(t, sizeof(t), "%d", TrophyRoom.Score);
    PrintText(t, 540, 9, c);
    
    switch (TrophyRoom.Rank) {
@@ -636,21 +635,21 @@ void DrawMainStats2()
 
    PrintText("Path travelled  ", 718 - GetTextW(hdcCMain,"Path travelled  "), 78, c);
    
-   if (OptSys)  sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Last.path / 0.3f);
-   else         sprintf_s(t, sizeof(t), "%1.0f m.", TrophyRoom.Last.path);
+   if (OptSys)  ::sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Last.path / 0.3f);
+   else         ::sprintf_s(t, sizeof(t), "%1.0f m.", TrophyRoom.Last.path);
 
    PrintText(t, 718, 78, c);
 
    PrintText("Time hunted  ", 718 - GetTextW(hdcCMain,"Time hunted  "), 98, c);
-   sprintf_s(t, sizeof(t), "%d:%02d:%02d", (ltm / 3600), ((ltm % 3600) / 60), (ltm % 60) );
+   ::sprintf_s(t, sizeof(t), "%d:%02d:%02d", (ltm / 3600), ((ltm % 3600) / 60), (ltm % 60) );
    PrintText(t, 718, 98, c);
 
    PrintText("Shots made  ", 718 - GetTextW(hdcCMain,"Shots made  "), 118, c);
-   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.smade);
+   ::sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.smade);
    PrintText(t, 718, 118, c);
 
    PrintText("Shots succeed  ", 718 - GetTextW(hdcCMain,"Shots succeed  "), 138, c);
-   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.ssucces);
+   ::sprintf_s(t, sizeof(t), "%d", TrophyRoom.Last.ssucces);
    PrintText(t, 718, 138, c);
 
 
@@ -658,32 +657,32 @@ void DrawMainStats2()
 
    PrintText("Path travelled  ", 718 - GetTextW(hdcCMain,"Path travelled  "), 208, c);
    if (TrophyRoom.Total.path < 1000)
-    if (OptSys)  sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Total.path / 0.3f);
-    else         sprintf_s(t, sizeof(t),"%1.0f m.", TrophyRoom.Total.path);
+    if (OptSys)  ::sprintf_s(t, sizeof(t), "%1.0f ft.", TrophyRoom.Total.path / 0.3f);
+    else         ::sprintf_s(t, sizeof(t),"%1.0f m.", TrophyRoom.Total.path);
    else
-	if (OptSys)  sprintf_s(t, sizeof(t),"%1.1f miles.", TrophyRoom.Total.path / 1667);
-    else         sprintf_s(t, sizeof(t),"%1.1f km.", TrophyRoom.Total.path / 1000.f);
+	if (OptSys)  ::sprintf_s(t, sizeof(t),"%1.1f miles.", TrophyRoom.Total.path / 1667);
+    else         ::sprintf_s(t, sizeof(t),"%1.1f km.", TrophyRoom.Total.path / 1000.f);
 
 
    PrintText(t, 718, 208, c);
 
    PrintText("Time hunted  ", 718 - GetTextW(hdcCMain,"Time hunted  "), 228, c);
-   sprintf_s(t, sizeof(t),"%d:%02d:%02d", (ttm / 3600), ((ttm % 3600) / 60), (ttm % 60) );
+   ::sprintf_s(t, sizeof(t),"%d:%02d:%02d", (ttm / 3600), ((ttm % 3600) / 60), (ttm % 60) );
    PrintText(t, 718, 228, c);
 
    PrintText("Shots made  ", 718 - GetTextW(hdcCMain,"Shots made  "), 248, c);
-   sprintf_s(t, sizeof(t), "%d", TrophyRoom.Total.smade);
+   ::sprintf_s(t, sizeof(t), "%d", TrophyRoom.Total.smade);
    PrintText(t, 718, 248, c);
 
    PrintText("Shots succeed  ", 718 - GetTextW(hdcCMain,"Shots succeed  "), 268, c);
-   sprintf_s (t, sizeof(t),"%d", TrophyRoom.Total.ssucces);
+   ::sprintf_s (t, sizeof(t),"%d", TrophyRoom.Total.ssucces);
    PrintText(t, 718, 268, c);
 
    PrintText("Succes ratio  ", 718 - GetTextW(hdcCMain,"Succes ratio  "), 288, c);
    if (TrophyRoom.Total.smade)
-     sprintf_s(t,sizeof(t),"%d%%", TrophyRoom.Total.ssucces * 100 / TrophyRoom.Total.smade);
+     ::sprintf_s(t,sizeof(t),"%d%%", TrophyRoom.Total.ssucces * 100 / TrophyRoom.Total.smade);
    else
-	 wsprintf(t,"100%%");
+	 ::sprintf_s(t,sizeof(t),"100%%");
    PrintText(t, 718, 288, c);   
 
    DrawMainStats();
@@ -695,9 +694,9 @@ void DrawRegistry()
    int  c = 0x00309070;
    char t[128];
    if ( (timeGetTime() % 800) > 300)
-	   wsprintf(t,"%s_", TrophyRoom.PlayerName);
+	   ::sprintf_s(t,sizeof(t),"%s_", TrophyRoom.PlayerName);
    else
-	   wsprintf(t,"%s", TrophyRoom.PlayerName);
+	   ::sprintf_s(t,sizeof(t),"%s", TrophyRoom.PlayerName);
 
    PrintText(t, 330, 326, c);
    for (int i=0; i<6; i++) {
@@ -724,7 +723,7 @@ void DrawRemove()
    int  c = 0x00B08030;   
    
    PrintText("Do you want to delete player", 290, 370, c);
-   wsprintf(t,"'%s' ?",PlayerR[CurPlayer].PName);
+   ::sprintf_s(t,sizeof(t),"'%s' ?",PlayerR[CurPlayer].PName);
    PrintText(t, 300, 394, c);
    
 
@@ -875,19 +874,18 @@ void SelectMenu0(int s)
 	  if (WinW==512) OptRes=2;
 	  if (WinW==640) OptRes=3;
 	  if (WinW==800) OptRes=4;
-	  if (WinW==1024) OptRes=5;
-	  if (WinW==1280) OptRes=6;
-	  if (WinW==1600) OptRes=7;
-	  if (WinW==1920) OptRes=8;
-	  if (WinW==2560) OptRes=9;
-	  //if (WinW==1024) OptRes=5;
+	  if (WinW==1280) OptRes=5;
+	  if (WinW==1600) OptRes=6;
+	  if (WinW==1920) OptRes=7;
+	  if (WinW==2560) OptRes=8;
+	  if (WinW==3840) OptRes=9;
 
 	  MenuState=3;
 	  LoadMenuTGA();
 	  break;
 //============ trphy =============//
    case 3:
-	  wsprintf(ProjectName, "huntdat\\areas\\trophy");
+	  ::sprintf_s(ProjectName, sizeof(ProjectName),"huntdat\\areas\\trophy");
 	  TrophyMode = TRUE;
       GameState = 1;
       break;
@@ -964,7 +962,7 @@ void SelectMenu1(int s)
 
 	  if (!ChInfo[TargetDino+4].mptr) break;
 	  if (ObservMode) {
-		  wsprintf(ProjectName, "huntdat\\areas\\area%d", TargetArea+1);		  
+		  ::sprintf_s(ProjectName, sizeof(ProjectName), "huntdat\\areas\\area%d", TargetArea+1);		  
 	      GameState = 1;		 
 	  } else {
 	      MenuState=2;
@@ -1022,7 +1020,7 @@ void SelectMenu2(int s)
 			 MessageBeep(0xFFFFFFFF);
 			 break;
 		 }
-      wsprintf(ProjectName, "huntdat\\areas\\area%d", TargetArea+1);
+      ::sprintf_s(ProjectName, sizeof(ProjectName), "huntdat\\areas\\area%d", TargetArea+1);
 	  GameState = 1;
 	  break;
 	}
@@ -1109,7 +1107,7 @@ void ProcessLicense()
       LoadMenuTGA();
 	} else {
 	  char fname[128];	  
-	  wsprintf(fname, "trophy0%d.sav", TrophyRoom.RegNumber);
+	  ::sprintf_s(fname,sizeof(fname), "trophy0%d.sav", TrophyRoom.RegNumber);
 	  DeleteFile(fname);
 	  DoHalt("");
 	}
@@ -1126,7 +1124,7 @@ void RemovePlayer()
 	if (CurPlayer==-1) return;
 	TrophyRoom.PlayerName[0]=0;
 	char fname[128];
-	wsprintf(fname, "trophy0%d.sav", CurPlayer);
+	::sprintf_s(fname, sizeof(fname),"trophy0%d.sav", CurPlayer);
 	DeleteFile(fname);	
 	LoadPlayersInfo();
 }
@@ -1212,7 +1210,7 @@ void ProcessRegistry()
 		{
 			if (CurPlayer==i) MenuSelect=1;
 			CurPlayer=i;
-			wsprintf(TrophyRoom.PlayerName, "%s", PlayerR[i].PName);
+			::sprintf_s(TrophyRoom.PlayerName, sizeof(TrophyRoom.PlayerName), "%s", PlayerR[i].PName);
 		}
 	  
     AddVoice3d(fxMenuGo.length, fxMenuGo.lpData, (float)1024+(p.x-200)*3, 0.f, 200.f);
@@ -1283,12 +1281,11 @@ void ProcessOptionsMenu()
 		if (OptRes==2) { WinW = 512; WinH=384; }
 		if (OptRes==3) { WinW = 640; WinH=480; }
 		if (OptRes==4) { WinW = 800; WinH=600; }
-		if (OptRes==5) { WinW =1024; WinH=768; }
-		if (OptRes==6) { WinW =1280; WinH=1024; }
-		if (OptRes==7) { WinW =1600; WinH=1200; }
-		if (OptRes==8) { WinW =1920; WinH=1080; }
-		if (OptRes==9) { WinW =2560; WinH=1440; }		
-		//if (OptRes==5) { WinW =1024; WinH=768; }		
+		if (OptRes==5) { WinW =1280; WinH=720; }
+		if (OptRes==6) { WinW =1600; WinH=900; }
+		if (OptRes==7) { WinW =1920; WinH=1080; }
+		if (OptRes==8) { WinW =2560; WinH=1440; }
+		if (OptRes==9) { WinW =3840; WinH=2160; }			
 		
 		SaveTrophy();
 		CopyMenuToVideo(0); ShowMenuVideo();  Wait(50);
@@ -1463,35 +1460,33 @@ void InitMenu()
 	AddMenuItem(Options[1], "Reverse mouse");
 	//AddMenuItem(Options[1], "Mouse sensitivity");
 	
-	wsprintf(CKtxt[0],"Color");
-	wsprintf(CKtxt[1],"Alpha Channel");
+	::sprintf_s(CKtxt[0], sizeof(CKtxt[0]), "Color");
+	::sprintf_s(CKtxt[1], sizeof(CKtxt[1]), "Alpha Channel");
 
-	wsprintf(HMLtxt[0],"Low");
-	wsprintf(HMLtxt[1],"Medium");
-	wsprintf(HMLtxt[2],"High");
+	::sprintf_s(HMLtxt[0], sizeof(HMLtxt[0]), "Low");
+	::sprintf_s(HMLtxt[1], sizeof(HMLtxt[1]), "Medium");
+	::sprintf_s(HMLtxt[2], sizeof(HMLtxt[2]), "High");
 
-	wsprintf(Restxt[0],"320x240");
-	wsprintf(Restxt[1],"400x300");
-	wsprintf(Restxt[2],"512x384");
-	wsprintf(Restxt[3],"640x480");
-	wsprintf(Restxt[4],"800x600");
-	wsprintf(Restxt[5],"1024x768");
-	wsprintf(Restxt[6],"1280x1024");
-	wsprintf(Restxt[7],"1600x1200");
-	wsprintf(Restxt[8],"1920x1080");
-	wsprintf(Restxt[9],"2560x1440");
+	::sprintf_s(Restxt[0], sizeof(Restxt[0]), "320x240");
+	::sprintf_s(Restxt[1], sizeof(Restxt[1]), "400x300");
+	::sprintf_s(Restxt[2], sizeof(Restxt[2]), "512x384");
+	::sprintf_s(Restxt[3], sizeof(Restxt[3]), "640x480");
+	::sprintf_s(Restxt[4], sizeof(Restxt[4]), "800x600");
+	::sprintf_s(Restxt[5], sizeof(Restxt[5]), "1280x720");
+	::sprintf_s(Restxt[6], sizeof(Restxt[6]), "1600x900");
+	::sprintf_s(Restxt[7], sizeof(Restxt[7]), "1920x1080");
+	::sprintf_s(Restxt[8], sizeof(Restxt[8]), "2560x1440");
+	::sprintf_s(Restxt[9], sizeof(Restxt[9]), "3840x2160");
 
+    ::sprintf_s(Textxt[0], sizeof(Textxt[0]), "Low");
+	::sprintf_s(Textxt[1], sizeof(Textxt[1]), "High");
+	::sprintf_s(Textxt[2], sizeof(Textxt[2]), "Auto");
 
+	::sprintf_s(Ontxt[0], sizeof(Ontxt[0]), "Off");
+	::sprintf_s(Ontxt[1], sizeof(Ontxt[1]), "On");
 
-    wsprintf(Textxt[0],"Low");
-	wsprintf(Textxt[1],"High");
-	wsprintf(Textxt[2],"Auto");
-
-	wsprintf(Ontxt[0],"Off");
-	wsprintf(Ontxt[1],"On");
-
-    wsprintf(Systxt[0],"Metric");
-	wsprintf(Systxt[1],"US");
+    ::sprintf_s(Systxt[0], sizeof(Systxt[0]), "Metric");
+	::sprintf_s(Systxt[1], sizeof(Systxt[1]), "US");
 	
 
 	OptText = 2;

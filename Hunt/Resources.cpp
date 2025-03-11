@@ -549,7 +549,7 @@ void LoadModelEx(TModel* &mptr, LPCSTR FName)
 
     if (hfile==INVALID_HANDLE_VALUE) {		
         char sz[512];
-        wsprintf( sz, "Error opening file\n%s.", FName );
+        ::sprintf_s( sz, sizeof(sz), "Error opening file\n%s.", FName );
 		DoHalt(sz);        
     }
 
@@ -595,7 +595,7 @@ void LoadWav(LPCSTR FName, TSFX &sfx)
   HANDLE hfile = CreateFile(FName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
   if( hfile==INVALID_HANDLE_VALUE ) {		
         char sz[512];
-        wsprintf( sz, "Error opening file\n%s.", FName );
+        ::sprintf_s( sz, sizeof(sz), "Error opening file\n%s.", FName );
 		DoHalt(sz);        
     }
   
@@ -653,7 +653,7 @@ void LoadPicture(TPicture &pic, LPSTR pname)
     hfile = CreateFile(pname, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
     if( hfile==INVALID_HANDLE_VALUE ) {		
         char sz[512];
-        wsprintf( sz, "Error opening file\n%s.", pname );
+        ::sprintf_s( sz, sizeof(sz), "Error opening file\n%s.", pname );
 		DoHalt(sz);        
     }
 
@@ -693,7 +693,7 @@ void LoadPictureTGA(TPicture &pic, LPCSTR pname)
     hfile = CreateFile(pname, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL );
     if( hfile==INVALID_HANDLE_VALUE ) {		
         char sz[512];
-        wsprintf( sz, "Error opening file\n%s.", pname );
+        ::sprintf_s( sz, sizeof(sz), "Error opening file\n%s.", pname );
 		DoHalt(sz);        
     }
 
@@ -937,8 +937,8 @@ void LoadResources()
     char MapName[128],RscName[128];
 	HeapAllocated=0;
 	
-    wsprintf(MapName,"%s%s", ProjectName, ".map");
-    wsprintf(RscName,"%s%s", ProjectName, ".rsc");
+    ::sprintf_s(MapName, sizeof(MapName), "%s%s", ProjectName, ".map");
+    ::sprintf_s(RscName, sizeof(RscName), "%s%s", ProjectName, ".rsc");
 
     ReleaseResources();
 
@@ -948,7 +948,7 @@ void LoadResources()
 
     if (hfile==INVALID_HANDLE_VALUE) {
         char sz[512];
-        wsprintf( sz, "Error opening resource file\n%s.", RscName );
+        ::sprintf_s( sz,  sizeof(sz), "Error opening resource file\n%s.", RscName );
 		DoHalt(sz);                
         return;   }
     
@@ -1058,13 +1058,13 @@ void LoadResources()
 
 //======== load calls ==============//
 	char name[128];
-    wsprintf(name,"HUNTDAT\\SOUNDFX\\CALLS\\call%d_a.wav", TargetDino+1);
+    ::sprintf_s(name, sizeof(name), "HUNTDAT\\SOUNDFX\\CALLS\\call%d_a.wav", TargetDino+1);
 	LoadWav(name, fxCall[0]);
 
-    wsprintf(name,"HUNTDAT\\SOUNDFX\\CALLS\\call%d_b.wav", TargetDino+1);
+    ::sprintf_s(name, sizeof(name), "HUNTDAT\\SOUNDFX\\CALLS\\call%d_b.wav", TargetDino+1);
 	LoadWav(name, fxCall[1]);
 
-	wsprintf(name,"HUNTDAT\\SOUNDFX\\CALLS\\call%d_c.wav", TargetDino+1);
+	::sprintf_s(name, sizeof(name), "HUNTDAT\\SOUNDFX\\CALLS\\call%d_c.wav", TargetDino+1);
 	LoadWav(name, fxCall[2]);
 
 	switch (TargetWeapon) {
@@ -1188,7 +1188,7 @@ void LoadCharacterInfo(TCharacterInfo &chinfo, LPCSTR FName)
 
    if (hfile==INVALID_HANDLE_VALUE) {
       char sz[512];
-      wsprintf( sz, "Error opening character file:\n%s.", FName );
+      ::sprintf_s( sz,  sizeof(sz),"Error opening character file:\n%s.", FName );
       DoHalt(sz);
     }
 
@@ -1437,7 +1437,7 @@ void SaveScreenShot()
 
 
     char t[12];
-    wsprintf(t,"HUNT%004d.BMP",++_shotcounter);
+    ::sprintf_s(t, sizeof(t), "HUNT%004d.BMP",++_shotcounter);
     hf = CreateFile(t,
                    GENERIC_READ | GENERIC_WRITE, 
                    (DWORD) 0, 

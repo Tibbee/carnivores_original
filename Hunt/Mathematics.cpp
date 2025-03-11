@@ -448,28 +448,28 @@ int  TraceShot(float ax, float ay, float az,
 
 void InitClips()
 {   
-   ClipA.v1.x = - (float)sin(pi/4-0.10);
+   ClipA.v1.x = - (float)sin(pi/2);
    ClipA.v1.y = 0;
-   ClipA.v1.z =   (float)cos(pi/4-0.10);
+   ClipA.v1.z =   (float)cos(pi/2);
    ClipA.v2.x = 0; ClipA.v2.y = 1; ClipA.v2.z = 0;
    MulVectorsVect(ClipA.v1, ClipA.v2, ClipA.nv);
 
-   ClipC.v1.x = + (float)sin(pi/4-0.01);
+   ClipC.v1.x = + (float)sin(pi/2);
    ClipC.v1.y = 0;
-   ClipC.v1.z =   (float)cos(pi/4-0.01);
+   ClipC.v1.z =   (float)cos(pi/2);
    ClipC.v2.x = 0; ClipC.v2.y =-1; ClipC.v2.z = 0;
    MulVectorsVect(ClipC.v1, ClipC.v2, ClipC.nv);
 
 
    ClipB.v1.x = 0;
-   ClipB.v1.y =   (float)sin(pi/5-.05);
-   ClipB.v1.z =   (float)cos(pi/5-.05);
+   ClipB.v1.y =   (float)sin(pi/4);
+   ClipB.v1.z =   (float)cos(pi/4);
    ClipB.v2.x = 1; ClipB.v2.y = 0; ClipB.v2.z = 0;
    MulVectorsVect(ClipB.v1, ClipB.v2, ClipB.nv);
 
    ClipD.v1.x = 0;
-   ClipD.v1.y = - (float)sin(pi/5-.05);
-   ClipD.v1.z =   (float)cos(pi/5-.05);
+   ClipD.v1.y = - (float)sin(pi/4);
+   ClipD.v1.z =   (float)cos(pi/4);
    ClipD.v2.x =-1; ClipD.v2.y = 0; ClipD.v2.z = 0;
    MulVectorsVect(ClipD.v1, ClipD.v2, ClipD.nv);
 

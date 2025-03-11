@@ -1,19 +1,8 @@
 # Ignore build directories
-Animator/
-Audiodrivers/
-Carnivores 2/
-Carnivores Ice Age/
-CarnivoresPatched/
-CarnView/
-ModdersEdition/
 Build/
 .vscode/
-*.ninja
-*.vcxproj*
-*.sln
-*.exe
-*.dll
-*.pdb
-*.7z
+.github/
 Backup/
 Docs/
+Minify/
+GEMINI.md

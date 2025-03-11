@@ -30,7 +30,6 @@ void Init_SetCooperative()
 	
 }
 
-
 int InitDirectSound( HWND hwnd)
 {
    PrintLog("\n");
@@ -38,7 +37,8 @@ int InitDirectSound( HWND hwnd)
  
    HRESULT hres;
    iTotalSoundDevices = 0;
-   hSoundHeap = HeapCreate( 0, 1024000, 4000000 );
+   //hSoundHeap = HeapCreate(0, 16777216, 1024000000 );
+   hSoundHeap = HeapCreate(HEAP_ZERO_MEMORY | HEAP_GROWABLE | HEAP_CREATE_ALIGN_16, 16777216, 0 );
    if( !hSoundHeap )
       return 0;
    PrintLog("SFX heap created\n");
@@ -64,7 +64,7 @@ int InitDirectSound( HWND hwnd)
 
    hres = DirectSoundEnumerate( (LPDSENUMCALLBACK)EnumerateSoundDevice, NULL);
    if( hres != DS_OK ) {
-      sprintf_s(logtt, sizeof(logtt), "DirectSoundEnumerate Error: %Xh\n", hres);
+      ::sprintf_s(logtt, sizeof(logtt), "DirectSoundEnumerate Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }
@@ -85,7 +85,7 @@ int InitDirectSound( HWND hwnd)
       if( sdd[i].lpDSC->dwFlags & (DSCAPS_PRIMARY16BIT | DSCAPS_PRIMARYSTEREO | DSCAPS_SECONDARY16BIT | DSCAPS_SECONDARYSTEREO ) ) {
          sdd[i].status = 1;
          iTotal16SD++;
-		 sprintf_s(logtt, sizeof(logtt),"Acceptable device: %d\n",i);
+		 ::sprintf_s(logtt, sizeof(logtt),"Acceptable device: %d\n",i);
 		 PrintLog(logtt);
       }
    }
@@ -95,13 +95,13 @@ int InitDirectSound( HWND hwnd)
    while( !sdd[iCurrentDriver].status )
 	   iCurrentDriver++;
    
-   sprintf_s(logtt, sizeof(logtt),"Device selected  : %d\n",iCurrentDriver);
+   ::sprintf_s(logtt, sizeof(logtt),"Device selected  : %d\n",iCurrentDriver);
    PrintLog(logtt);
 
 
    hres = DirectSoundCreate( sdd[iCurrentDriver].lpGuid, &lpDS, NULL );   
    if( (hres != DS_OK) || (!lpDS) ) {
-	  sprintf_s(logtt, sizeof(logtt),"DirectSoundCreate Error: %Xh\n", hres);
+	  ::sprintf_s(logtt, sizeof(logtt),"DirectSoundCreate Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }
@@ -112,7 +112,7 @@ int InitDirectSound( HWND hwnd)
    PrintLog("Attempting to set WRITEPRIMARY CooperativeLevel:\n");
    hres = lpDS->SetCooperativeLevel( hwnd, DSSCL_WRITEPRIMARY );
    if (hres != DS_OK) {	  
-	  sprintf_s(logtt, sizeof(logtt),"SetCooperativeLevel Error: %Xh\n", hres);
+	  ::sprintf_s(logtt, sizeof(logtt),"SetCooperativeLevel Error: %Xh\n", hres);
 	  PrintLog(logtt);
       PrimaryMode = FALSE;
    } else
@@ -123,7 +123,7 @@ int InitDirectSound( HWND hwnd)
 	   PrintLog("Attempting to set EXCLUSIVE CooperativeLevel:\n");
 	   hres = lpDS->SetCooperativeLevel( hwnd, DSSCL_EXCLUSIVE);
        if (hres != DS_OK) {	     
-	     sprintf_s(logtt, sizeof(logtt),"==>>SetCooperativeLevel Error: %Xh\n", hres);
+	     ::sprintf_s(logtt, sizeof(logtt),"==>>SetCooperativeLevel Error: %Xh\n", hres);
 	     PrintLog(logtt);
 		 return 0;
 	   }   
@@ -143,7 +143,7 @@ int InitDirectSound( HWND hwnd)
    
    hres = lpDS->CreateSoundBuffer( &dsbd, &lpdsPrimary, NULL );
    if( hres != DS_OK ) {
-	  sprintf_s(logtt,sizeof(logtt), "==>>CreatePrimarySoundBuffer Error: %Xh\n", hres);
+	  ::sprintf_s(logtt,sizeof(logtt), "==>>CreatePrimarySoundBuffer Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -152,7 +152,7 @@ int InitDirectSound( HWND hwnd)
 
    hres = lpdsPrimary->SetFormat( &wf );
    if( hres != DS_OK ) {
-	  sprintf_s(logtt, sizeof(logtt),"SetFormat Error: %Xh\n", hres);
+	  ::sprintf_s(logtt, sizeof(logtt),"SetFormat Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -173,7 +173,7 @@ int InitDirectSound( HWND hwnd)
    
    hres = lpDS->CreateSoundBuffer( &dsbd, &lpdsSecondary, NULL );
    if( hres != DS_OK ) {
-	  sprintf_s(logtt, sizeof(logtt),"CreateSecondarySoundBuffer Error: %Xh\n", hres);
+	  ::sprintf_s(logtt, sizeof(logtt),"CreateSecondarySoundBuffer Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;
    }   
@@ -192,7 +192,7 @@ SKIPSECONDARY:
          
    hres = lpdsWork->Play( 0, 0, DSBPLAY_LOOPING );
    if( hres != DS_OK ) {
-      sprintf_s(logtt, sizeof(logtt),"Play Error: %Xh\n", hres);
+      ::sprintf_s(logtt, sizeof(logtt),"Play Error: %Xh\n", hres);
 	  PrintLog(logtt);
       return 0;   
    }
@@ -338,7 +338,7 @@ BOOL CALLBACK EnumerateSoundDevice( GUID* lpGuid, LPSTR lpstrDescription, LPSTR 
            return FALSE;
        }     
    }            
-   sprintf_s(logtt,sizeof(logtt),"Device%d: ",iTotalSoundDevices);
+   ::sprintf_s(logtt,sizeof(logtt),"Device%d: ",iTotalSoundDevices);
    PrintLog(logtt);
    PrintLog(lpstrDescription);
    PrintLog("/");
@@ -373,7 +373,7 @@ void Audio_Restore()
 {
    if (!iSoundActive) return;
    
-   lpdsWork->Stop();	   
+   //lpdsWork->Stop();	   
    lpdsWork->Restore();
    HRESULT hres = lpdsWork->Play( 0, 0, DSBPLAY_LOOPING );   
    if (hres != DS_OK) AudioNeedRestore = TRUE;

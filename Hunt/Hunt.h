@@ -652,7 +652,7 @@ _EXTORNOT   LPDIRECTDRAWSURFACE lpddsPrimary;
 _EXTORNOT   BOOL DirectActive, FULLSCREEN, RestartMode;
 _EXTORNOT   BOOL LoDetailSky;
 _EXTORNOT   int  WinW,WinH,WinEX,WinEY,VideoCX,VideoCY,iBytesPerLine,ts,r,MapMinY;
-_EXTORNOT   float CameraW,CameraH,AspectRatio,Soft_Persp_K, stepdy, stepdd;
+_EXTORNOT   float CameraW,CameraH,Soft_Persp_K, stepdy, stepdd;
 _EXTORNOT   CLIPPLANE ClipA,ClipB,ClipC,ClipD,ClipZ,ClipW;
 _EXTORNOT   int u,vused, CCX, CCY;
 

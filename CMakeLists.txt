@@ -14,7 +14,7 @@ set(SOURCES
     Hunt/Interface.cpp
     Hunt/mathematics.cpp
     Hunt/Render3DFX.cpp
-    #Hunt/renderasm.cpp
+    #Hunt/renderasm.cpp //RenderSoft.cpp includes it into its own code
     Hunt/renderd3d.cpp
     Hunt/RenderSoft.cpp
     Hunt/Resources.cpp
@@ -56,7 +56,10 @@ add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
         $<TARGET_FILE:${EXECUTABLE_NAME}> 
         "E:/Games/Carnivores1/${EXECUTABLE_NAME}.exe"
-    COMMENT "Copying executable to game folder..."
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        $<TARGET_FILE_DIR:${EXECUTABLE_NAME}>/
+        "E:/Games/Carnivores1/"
+    COMMENT "Copying executable and all other files to game folder..."
 )
 
 # Set compile definitions based on renderer options
@@ -70,7 +73,7 @@ endif()
 
 # Set compiler flags
 target_compile_options(${EXECUTABLE_NAME} PRIVATE
-    $<$<CONFIG:Release>:/GL>
+    $<$<CONFIG:MinSizeRel>:/GL>
     $<$<CONFIG:Debug>:/DDEBUG>
 )
 
@@ -78,6 +81,7 @@ target_compile_options(${EXECUTABLE_NAME} PRIVATE
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/Debug"
     RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release"
+    RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "${CMAKE_BINARY_DIR}/Release"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
 )

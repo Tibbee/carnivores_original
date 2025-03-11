@@ -7,12 +7,11 @@ void SetupRes()
 	if (OptRes==2) { WinW = 512; WinH=384; }
 	if (OptRes==3) { WinW = 640; WinH=480; }
 	if (OptRes==4) { WinW = 800; WinH=600; }
-	if (OptRes==5) { WinW =1024; WinH=768; }
-	if (OptRes==6) { WinW =1280; WinH=1024; }
-	if (OptRes==7) { WinW =1600; WinH=1200; }
-	if (OptRes==8) { WinW =1920; WinH=1080; }
-	if (OptRes==9) { WinW =2560; WinH=1440; }
-	//if (OptRes==5) { WinW =1024; WinH=768; }		
+	if (OptRes==5) { WinW =1280; WinH=720; }
+	if (OptRes==6) { WinW =1600; WinH=900; }
+	if (OptRes==7) { WinW =1920; WinH=1080; }
+	if (OptRes==8) { WinW =2560; WinH=1440; }
+	if (OptRes==9) { WinW =3840; WinH=2160; }	
 
 }
 
@@ -193,7 +192,12 @@ void ProcessCommandLine()
      if (strstr(s,"/vmode3")) SetVideoMode(512, 384);
      if (strstr(s,"/vmode4")) SetVideoMode(640, 480);
      if (strstr(s,"/vmode5")) SetVideoMode(800, 600);
-	 if (strstr(s,"/vmode6")) SetVideoMode(1920, 1080);      
+	 if (strstr(s,"/vmode6")) SetVideoMode(1024, 768);
+	 if (strstr(s,"/vmode7")) SetVideoMode(1280, 720);
+     if (strstr(s,"/vmode8")) SetVideoMode(1600, 900);
+	 if (strstr(s,"/vmode9")) SetVideoMode(1920, 1080);
+	 if (strstr(s,"/vmode10")) SetVideoMode(2560, 1440);
+	 if (strstr(s,"/vmode11")) SetVideoMode(3840, 2160);  
      if (strstr(s,"prj=")) { strcpy_s(ProjectName, sizeof(ProjectName), s+4); GameState = 1; }
   } 
 }
@@ -468,8 +472,8 @@ void InitEngine()
 
 
 
-
-    Heap = HeapCreate( 0, 16000000, 40000000 );
+	//Heap = HeapCreate(0, 16777216, 1024000000 );
+    Heap = HeapCreate(HEAP_ZERO_MEMORY | HEAP_GROWABLE | HEAP_CREATE_ALIGN_16, 16777216, 0 );
     if( Heap == NULL ) {
       MessageBox(hwndMain,"Error creating heap.","Error",IDOK);     
       return; }
@@ -479,7 +483,7 @@ void InitEngine()
     WaterR = 10;
     WaterG = 38;
     WaterB = 46;
-    WaterA = 10;
+    WaterA = 10;	
 	TargetDino = 0;
     MessageList.timeleft = 0;
 
@@ -502,7 +506,7 @@ void InitEngine()
     SetVideoMode(512, 384);    
 #endif
 */
-	FULLSCREEN = TRUE;
+	FULLSCREEN = false;
     MenuState = -1;
     
 //    MenuState = 0;
@@ -515,7 +519,7 @@ void InitEngine()
 
     ProcessCommandLine();    
     
-    ctViewR = 36;
+    ctViewR = 60;
     Soft_Persp_K = 1.5f;
     HeadY = 220;
 
@@ -1001,7 +1005,7 @@ void LoadTrophy()
 	DWORD l;
 	char fname[128];
 	int rn = TrophyRoom.RegNumber;
-	wsprintf(fname, "trophy0%d.sav", TrophyRoom.RegNumber);
+	::sprintf_s(fname, sizeof(fname), "trophy0%d.sav", TrophyRoom.RegNumber);
 	HANDLE hfile = CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hfile==INVALID_HANDLE_VALUE) {
 		PrintLog("===> Error loading trophy!\n");
@@ -1044,7 +1048,7 @@ void SaveTrophy()
 {
 	DWORD l;
 	char fname[128];
-	wsprintf(fname, "trophy0%d.sav", TrophyRoom.RegNumber);
+	::sprintf_s(fname, sizeof(fname), "trophy0%d.sav", TrophyRoom.RegNumber);
 
 	int r = TrophyRoom.Rank;
 	TrophyRoom.Rank = 0;
@@ -1096,7 +1100,7 @@ void LoadPlayersInfo()
 	  char fname[128];
 	  DWORD l;
 
-	  wsprintf(fname, "trophy0%d.sav", p);
+	  ::sprintf_s(fname, sizeof(fname), "trophy0%d.sav", p);
 	  HANDLE hfile = CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	  if (!hfile) continue;
 	  ReadFile(hfile, &PlayerR[p], sizeof(PlayerR[p]), &l, NULL);

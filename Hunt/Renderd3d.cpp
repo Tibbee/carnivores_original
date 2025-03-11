@@ -530,7 +530,7 @@ HRESULT WINAPI EnumDeviceCallback(
 {
    LPD3DDEVICEDESC lpd3dDeviceDesc;
 
-   wsprintf(logt,"ENUMERATE: DDesc: %s DName: %s\n", lpszDeviceDesc, lpszDeviceName);
+   ::sprintf_s(logt, sizeof(logt), "ENUMERATE: DDesc: %s DName: %s\n", lpszDeviceDesc, lpszDeviceName);
    //PrintLog(logt);
    if( !lpd3dHWDeviceDesc->dcmColorModel )
       return D3DENUMRET_OK; // we don't need SW rasterizer
@@ -568,7 +568,7 @@ HRESULT CreateDirect3D( HWND hwnd )
    hRes = lpDD->SetDisplayMode( WinW, WinH, 16 );
    if (FAILED(hRes)) DoHalt("Error setting display mode\n");
    
-   wsprintf(logt, "Set Display mode %dx%d, 16bpp\n", WinW, WinH);
+   ::sprintf_s(logt, sizeof(logt), "Set Display mode %dx%d, 16bpp\n", WinW, WinH);
    PrintLog(logt);
    
    hRes = lpDD->QueryInterface( IID_IDirect3D, (LPVOID*) &lpd3d);
@@ -764,7 +764,7 @@ void Init3DHardware()
     d3dTexturesMem = t * 256 * 256 * 2;
 
     // Log texture memory detection (in kilobytes)
-    sprintf_s(logt, sizeof(logt), "DETECTED: Texture memory: %dK.\n", d3dTexturesMem >> 10);
+    ::sprintf_s(logt, sizeof(logt), "DETECTED: Texture memory: %dK.\n", d3dTexturesMem >> 10);
     PrintLog(logt);
 
     // Load the first texture to initialize texture memory
@@ -788,8 +788,8 @@ void Init3DHardware()
     // Prevent division by zero and display texture transfer speed
     if (elapsedTime > 0) {
         double transferSpeed = (128 * 10000) / elapsedTime; // Transfer speed in K/sec
-        // Use sprintf_s for safe string formatting
-        sprintf_s(logt, sizeof(logt), "DETECTED: Texture transfer speed: %.2f K/sec.\n", transferSpeed);
+        // Use ::sprintf_s for safe string formatting
+        ::sprintf_s(logt, sizeof(logt), "DETECTED: Texture transfer speed: %.2f K/sec.\n", transferSpeed);
         PrintLog(logt);
     } else {
         // Handle case where elapsedTime is too small (essentially zero)
@@ -845,11 +845,11 @@ void d3dDetectCaps()
 	for (t=0; t<10; t++) d3dDownLoadTexture(0, 256, 256, SkyPic);
 	T = timeGetTime() - T;	
 	
-	wsprintf(logt, "DETECTED: Texture memory : %dK.\n", d3dTexturesMem>>10);
+	::sprintf_s(logt, sizeof(logt), "DETECTED: Texture memory : %dK.\n", d3dTexturesMem>>10);
 	PrintLog(logt);
 	ResetTextureMap();
 
-	//wsprintf(logt, "DETECTED: Texture transfer speed: %dK/sec.\n", 128*10000 / T);
+	//::sprintf_s(logt, "DETECTED: Texture transfer speed: %dK/sec.\n", 128*10000 / T);
 	//PrintLog(logt);
 
 
@@ -901,7 +901,7 @@ void Activate3DHardware()
    LPDIRECTDRAWCOLORCONTROL lpCC;
    HRESULT hres = lpDD->QueryInterface( IID_IDirectDrawColorControl, (LPVOID*)&lpCC);
 
-   wsprintf(logt, "%X", hres);
+   ::sprintf_s(logt,  sizeof(logt), "%X", hres);
    PrintLog(logt);
 
    if (lpCC) {
@@ -1279,7 +1279,7 @@ void TryHiResTx()
       UsedMem+= d3dMemMap[m].size;
   }
 /*
-  wsprintf(logt, "TOTALL: %d USED: %d", d3dTexturesMem, UsedMem);
+  ::sprintf_s(logt, sizeof(logt),  "TOTALL: %d USED: %d", d3dTexturesMem, UsedMem);
   AddMessage(logt);
 */
   if (UsedMem*4 < (int)d3dTexturesMem)
@@ -1291,7 +1291,7 @@ void ShowVideo()
 {	
 	/*
   char t[128];
-  wsprintf(t, "T-mem loaded: %dK", d3dMemLoaded >> 10);
+  ::sprintf_s(t,  sizeof(logt), "T-mem loaded: %dK", d3dMemLoaded >> 10);
   if (d3dMemLoaded) AddMessage(t);
   */
 
@@ -1410,46 +1410,46 @@ void DrawTrophyText(int x0, int y0)
 	x = x0;
 	ddTextOut(x, y0+16, "Weight: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weight: ");
 	if (OptSys)
-     sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
+     ::sprintf_s(t,sizeof(t),"%3.2ft ", DinoInfo[dtype].Mass * scale * scale / 0.907);
 	else
-     sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);     
+     ::sprintf_s(t,sizeof(t),"%3.2fT ", DinoInfo[dtype].Mass * scale * scale);     
 
     ddTextOut(x, y0+16, t, 0x0000BFBF);    x+=GetTextW(hdcMain,t);
     ddTextOut(x, y0+16, "Length: ", 0x00BFBFBF); x+=GetTextW(hdcMain,"Length: ");
      
 	if (OptSys)
-	 sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
+	 ::sprintf_s(t,sizeof(t),"%3.2fft", DinoInfo[dtype].Length * scale / 0.3);
 	else
-	 sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
+	 ::sprintf_s(t,sizeof(t),"%3.2fm", DinoInfo[dtype].Length * scale);
 
 	ddTextOut(x, y0+16, t, 0x0000BFBF); 
 	
 	x = x0;
 	ddTextOut(x, y0+32, "Weapon: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Weapon: ");
-	 wsprintf(t,"%s    ", WeapInfo[wep].Name);
+	 ::sprintf_s(t, sizeof(t), "%s    ", WeapInfo[wep].Name);
     ddTextOut(x, y0+32, t, 0x0000BFBF);   x+=GetTextW(hdcMain,t);
     ddTextOut(x, y0+32, "Score: ", 0x00BFBFBF);   x+=GetTextW(hdcMain,"Score: ");
-	 wsprintf(t,"%d", score);
+	 ::sprintf_s(t,sizeof(t),"%d", score);
 	ddTextOut(x, y0+32, t, 0x0000BFBF); 
 
 
 	x = x0;
 	ddTextOut(x, y0+48, "Range of kill: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Range of kill: ");
-	if (OptSys) sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
-	else        sprintf_s(t,sizeof(t),"%3.1fm", range);
+	if (OptSys) ::sprintf_s(t,sizeof(t),"%3.1fft", range / 0.3);
+	else        ::sprintf_s(t,sizeof(t),"%3.1fm", range);
     ddTextOut(x, y0+48, t, 0x0000BFBF);  
 
 
 	x = x0;
 	ddTextOut(x, y0+64, "Date: ", 0x00BFBFBF);  x+=GetTextW(hdcMain,"Date: ");
 	if (OptSys)
-	 wsprintf(t,"%d.%d.%d   ", ((date>>10) & 255), (date & 255), date>>20);
+	 ::sprintf_s(t,sizeof(t),"%d.%d.%d   ", ((date>>10) & 255), (date & 255), date>>20);
 	else
-     wsprintf(t,"%d.%d.%d   ", (date & 255), ((date>>10) & 255), date>>20);
+     ::sprintf_s(t,sizeof(t),"%d.%d.%d   ", (date & 255), ((date>>10) & 255), date>>20);
 
     ddTextOut(x, y0+64, t, 0x0000BFBF);   x+=GetTextW(hdcMain,t);
     ddTextOut(x, y0+64, "Time: ", 0x00BFBFBF);   x+=GetTextW(hdcMain,"Time: ");
-	 wsprintf(t,"%d:%02d", ((time>>10) & 255), (time & 255));
+	 ::sprintf_s(t,sizeof(t),"%d:%02d", ((time>>10) & 255), (time & 255));
 	ddTextOut(x, y0+64, t, 0x0000BFBF); 
 
 	SmallFont = FALSE;
@@ -1476,8 +1476,8 @@ void Render_LifeInfo(int li)
 		
     ddTextOut(x, y, DinoInfo[ctype].Name, 0x0000b000);    
 		
-	if (OptSys) sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
-	else        sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
+	if (OptSys) ::sprintf_s(t,sizeof(t),"Weight: %3.2ft ", DinoInfo[ctype].Mass * scale * scale / 0.907);
+	else        ::sprintf_s(t,sizeof(t),"Weight: %3.2fT ", DinoInfo[ctype].Mass * scale * scale);     
     
 	ddTextOut(x, y+16, t, 0x0000b000);
     
@@ -1497,10 +1497,10 @@ void ShowControlElements()
   char buf[128];
   
   if (TIMER) {
-   wsprintf(buf,"msc: %d", TimeDt);
+   ::sprintf_s(buf,sizeof(buf),"msc: %d", TimeDt);
    ddTextOut(WinEX-81, 11, buf, 0x0020A0A0);
 
-   wsprintf(buf,"polys: %d", dFacesCount);   
+   ::sprintf_s(buf,sizeof(buf),"polys: %d", dFacesCount);   
    ddTextOut(WinEX-90, 24, buf, 0x0020A0A0);
   }
 
@@ -1511,9 +1511,9 @@ void ShowControlElements()
 
   if (ExitTime) {	  
 	  int y = WinH / 3;
-	  wsprintf(buf,"Preparing for evacuation...");
+	  ::sprintf_s(buf,sizeof(buf),"Preparing for evacuation...");
       ddTextOut(VideoCX - GetTextW(hdcCMain, buf)/2, y, buf, 0x0060C0D0);
-	  wsprintf(buf,"%d seconds left.", 1 + ExitTime / 1000);
+	  ::sprintf_s(buf,sizeof(buf),"%d seconds left.", 1 + ExitTime / 1000);
 	  ddTextOut(VideoCX - GetTextW(hdcCMain, buf)/2, y + 18, buf, 0x0060C0D0);
   }  
 }

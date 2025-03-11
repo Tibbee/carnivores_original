@@ -19,7 +19,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/Build/ReleaseSoft",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
         "BUILD_SOFT": "ON"
       }
     },
@@ -29,7 +29,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/Build/ReleaseD3D",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
         "BUILD_D3D": "ON"
       }
     },
@@ -39,7 +39,7 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/Build/Release3DFX",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_BUILD_TYPE": "MinSizeRel",
         "BUILD_3DFX": "ON"
       }
     },
